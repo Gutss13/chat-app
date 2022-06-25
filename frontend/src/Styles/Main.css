@@ -1,0 +1,29 @@
+.people {
+  color: blue;
+  font-size: large;
+}
+.friends:hover {
+  cursor: pointer;
+}
+.sender {
+  background-color: cyan;
+}
+.requestSent {
+  font-size: 12px;
+  color: green;
+  border: 1px gray solid;
+}
+.online {
+  display: inline-block;
+  margin: 0px 5px;
+  width: 10px;
+  height: 10px;
+  background-color: green;
+}
+.offline {
+  display: inline-block;
+  margin: 0px 5px;
+  width: 10px;
+  height: 10px;
+  background-color: red;
+}
