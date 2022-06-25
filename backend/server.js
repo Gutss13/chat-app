@@ -40,6 +40,25 @@ wss.on('connection', (ws) => {
     }
     wss.clients.forEach((client) => {
       if ('instructions' in newData) {
+        let id;
+        let searchText;
+        newData.instructions.forEach((element) => {
+          if (element.id) id = element.id;
+          if (element.searchText) searchText = element.searchText;
+        });
+        if (id) {
+          axios.patch(
+            `http://localhost:3000/people/${id}/${id}/${searchText}`,
+            {
+              isOnline: false,
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+        }
         if (newData.instructions.includes('refreshFriends')) {
           client.send('refreshFriends');
         }

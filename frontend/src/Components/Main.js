@@ -43,48 +43,37 @@ function Main(props) {
         if (data && data[0]) setFriends([...data[0].friendList.friends]);
       });
     props.setIsLoggedIn(true);
-    const user = localStorage.id;
-    ws.addEventListener('open', async () => {
-      await axios
-        .patch(
-          `http://localhost:3000/people/${user}/${localStorage.id}/${searchText}`,
-          {
-            isOnline: true,
+
+    axios
+      .patch(
+        `http://localhost:3000/people/${localStorage.id}/${localStorage.id}/${searchText}`,
+        {
+          isOnline: true,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
           },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        )
-        .then(() => {
-          ws.send(
-            JSON.stringify({
-              instructions: ['refreshFriends', 'refreshPeople'],
-            })
-          );
-        });
-    });
-    ws.addEventListener('close', async () => {
-      await axios
-        .patch(
-          `http://localhost:3000/people/${user}/${localStorage.id}/${searchText}`,
-          {
-            isOnline: false,
-          },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        )
-        .then(() => {
-          ws.send(
-            JSON.stringify({
-              instructions: ['refreshFriends', 'refreshPeople'],
-            })
-          );
-        });
+        }
+      )
+      .then(() => {
+        ws.send(
+          JSON.stringify({
+            instructions: ['refreshFriends', 'refreshPeople'],
+          })
+        );
+      });
+
+    window.addEventListener('beforeunload', () => {
+      ws.send(
+        JSON.stringify({
+          instructions: [
+            'refreshFriends',
+            'refreshPeople',
+            { id: localStorage.id, searchText: searchText },
+          ],
+        })
+      );
     });
   }, []);
 
@@ -132,8 +121,26 @@ function Main(props) {
           type="button"
           onClick={(e) => {
             e.preventDefault();
+            axios
+              .patch(
+                `http://localhost:3000/people/${localStorage.id}/${localStorage.id}/${searchText}`,
+                {
+                  isOnline: false,
+                },
+                {
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                }
+              )
+              .then(() => {
+                ws.send(
+                  JSON.stringify({
+                    instructions: ['refreshFriends', 'refreshPeople'],
+                  })
+                );
+              });
             props.setIsLoggedIn(false);
-            ws.close();
             localStorage.clear();
           }}
         >

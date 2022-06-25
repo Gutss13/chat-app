@@ -37,11 +37,7 @@ function AddFriend(props) {
               return request.data;
             })
             .then((data) => {
-              console.log(data);
               props.setFoundPeople([...data]);
-            })
-            .catch((err) => {
-              console.log(err);
             });
         }
       }
@@ -63,7 +59,7 @@ function AddFriend(props) {
         });
     } else {
       props.setFoundPeople(null);
-      props.setSearchText(null);
+      props.setSearchText('');
     }
   };
 
@@ -471,12 +467,12 @@ function AddFriend(props) {
               ? props.foundPeople.map((person, i) => {
                   return (
                     <div key={i} className="people">
-                      <span>
-                        {person.first_name} {person.last_name}
-                      </span>
                       <div
                         className={person.isOnline ? 'online' : 'offline'}
                       ></div>
+                      <span>
+                        {person.first_name} {person.last_name}
+                      </span>
                       {person.friendList.friends.includes(localStorage.id) ? (
                         <input
                           type="button"
@@ -538,12 +534,12 @@ function AddFriend(props) {
               ? props.allPeople.map((person, i) => {
                   return (
                     <div key={i} className="people">
-                      <span>
-                        {person.first_name} {person.last_name}
-                      </span>
                       <div
                         className={person.isOnline ? 'online' : 'offline'}
                       ></div>
+                      <span>
+                        {person.first_name} {person.last_name}
+                      </span>
                       {person.friendList.friends.includes(localStorage.id) ? (
                         <input
                           type="button"
