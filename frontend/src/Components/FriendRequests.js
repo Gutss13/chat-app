@@ -12,6 +12,7 @@ function FriendRequests(props) {
         return request.data;
       })
       .then((data) => {
+        const incomingRequestsCopy = [];
         if (data[0] && data[0].friendList) {
           if (Object.keys(data[0].friendList.requests.incoming).length > 0) {
             Object.keys(data[0].friendList.requests.incoming).forEach((key) => {
@@ -23,19 +24,13 @@ function FriendRequests(props) {
                   return request.data;
                 })
                 .then((reqSender) => {
-                  if (props.incomingRequests.length > 0) {
-                    props.setIncomingRequests([
-                      ...props.incomingRequests,
-                      reqSender,
-                    ]);
-                  } else {
-                    props.setIncomingRequests([...reqSender]);
-                  }
+                  incomingRequestsCopy.push(reqSender[0]);
                 });
             });
           } else {
             props.setIncomingRequests([]);
           }
+          props.setIncomingRequests(incomingRequestsCopy);
         }
       });
     ws.addEventListener('message', (e) => {
@@ -47,6 +42,7 @@ function FriendRequests(props) {
             return request.data;
           })
           .then((data) => {
+            const incomingRequestsCopy = [];
             if (data[0] && data[0].friendList) {
               if (
                 Object.keys(data[0].friendList.requests.incoming).length > 0
@@ -61,20 +57,14 @@ function FriendRequests(props) {
                         return request.data;
                       })
                       .then((reqSender) => {
-                        if (props.incomingRequests.length > 0) {
-                          props.setIncomingRequests([
-                            ...props.incomingRequests,
-                            reqSender,
-                          ]);
-                        } else {
-                          props.setIncomingRequests([...reqSender]);
-                        }
+                        incomingRequestsCopy.push(reqSender[0]);
                       });
                   }
                 );
               } else {
                 props.setIncomingRequests([]);
               }
+              props.setIncomingRequests(incomingRequestsCopy);
             }
           });
       }
@@ -83,8 +73,6 @@ function FriendRequests(props) {
 
   const acceptFriendRequest = async (e) => {
     e.preventDefault();
-    //add to friendList.friends for both sides
-    //remove from friendList.requests for both sides
     const friend = await axios
       .get(`http://localhost:3000/people/personbyid/${e.target.className}`)
       .then((request) => {
@@ -156,7 +144,6 @@ function FriendRequests(props) {
         }
         props.setAllPeople([...data.allPeople]);
       });
-    // setFriends(current user's friendList.friends)
     const updatedRequests = props.incomingRequests.filter(
       (req) => req.id !== e.target.className
     );
@@ -238,45 +225,49 @@ function FriendRequests(props) {
   };
 
   return (
-    <div>
+    <>
       <button
         type="button"
+        className="inline-block"
         onClick={() => setIsRequestsShown(!isRequestsShown)}
       >
-        Friend Requests
+        Requests ({props.incomingRequests.length})
       </button>
-      {props.incomingRequests.length}
       {isRequestsShown && props.incomingRequests.length > 0
         ? props.incomingRequests.map((element, i) => {
             return (
-              <div key={i}>
-                <span>
-                  {element.first_name} {element.last_name}
-                </span>
-                <button
-                  type="button"
-                  value="Accept"
-                  className={element.id}
-                  onClick={(e) => {
-                    acceptFriendRequest(e);
-                  }}
-                >
-                  Accept
-                </button>
-                <button
-                  value="Reject"
-                  className={element.id}
-                  onClick={(e) => {
-                    rejectFriendRequest(e);
-                  }}
-                >
-                  Reject
-                </button>
+              <div key={i} className="people peopleInnerDiv">
+                <div>
+                  <span>
+                    {element.first_name} {element.last_name}
+                  </span>
+                </div>
+                <div>
+                  <button
+                    type="button"
+                    value="Accept"
+                    className={element.id}
+                    onClick={(e) => {
+                      acceptFriendRequest(e);
+                    }}
+                  >
+                    Accept
+                  </button>
+                  <button
+                    value="Reject"
+                    className={element.id}
+                    onClick={(e) => {
+                      rejectFriendRequest(e);
+                    }}
+                  >
+                    Reject
+                  </button>
+                </div>
               </div>
             );
           })
         : null}
-    </div>
+    </>
   );
 }
 

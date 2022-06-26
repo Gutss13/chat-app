@@ -51,24 +51,24 @@ function Register(props) {
 
   return (
     <div>
-      <form>
+      <form className="register">
         <div>
-          <label htmlFor="first_name">First Name:</label>
+          <label htmlFor="first_name">First Name*:</label>
           <input type="text" id="first_name" ref={firstNameInput} required />
         </div>
         <div>
-          <label htmlFor="">Last Name:</label>
+          <label htmlFor="">Last Name*:</label>
           <input type="text" id="last_name" ref={lastNameInput} required />
         </div>
         <div>
-          <label htmlFor="mail">Email:</label>
+          <label htmlFor="mail">Email*:</label>
           <input type="email" id="mail" ref={mailInput} required />
           {mailValidate &&
             mailValidate.length > 0 &&
             'This mail is already used'}
         </div>
         <div>
-          <label htmlFor="password">Password:</label>
+          <label htmlFor="password">Password*:</label>
           <input type="password" id="password" ref={passwordInput} required />
         </div>
         <input type="hidden" value={uuidv4()} required ref={idInput} />

@@ -10,7 +10,7 @@ function Friends(props) {
         return request.data;
       })
       .then((data) => {
-        if (data[0]) props.setFriends(data[0].friendList.friends);
+        if (data[0]) props.setFriends([...data[0].friendList.friends]);
       });
     ws.addEventListener('message', (e) => {
       const newData = e.data;
@@ -112,35 +112,69 @@ function Friends(props) {
       }
     );
     props.setFriends([...myFriendList]);
+    if (e.target.className === props.receiver.id) {
+      props.setReceiver(null);
+    }
   };
 
   return (
-    <div>
-      {props.friendsInfo.length > 0 &&
-        props.friendsInfo.map((person, i) => {
-          return (
-            <div key={i} className="people friends">
-              <div className={person.isOnline ? 'online' : 'offline'}></div>
-              <span
-                className={person.id}
-                onClick={(e) => {
-                  handleClick(e);
-                }}
-              >
-                {person.first_name} {person.last_name}
-              </span>
-              <button
-                type="button"
-                className={person.id}
-                onClick={(e) => {
-                  handleClickRemoveFriend(e);
-                }}
-              >
-                remove
-              </button>
-            </div>
-          );
-        })}
+    <div className="friendsContainer">
+      {props.foundFriends && props.friendSearchText
+        ? props.foundFriends.map((person, i) => {
+            return (
+              <div key={i} className="people friends peopleInnerDiv">
+                <div>
+                  <div className={person.isOnline ? 'online' : 'offline'}></div>
+                  <span
+                    className={person.id}
+                    onClick={(e) => {
+                      handleClick(e);
+                    }}
+                  >
+                    {person.first_name} {person.last_name}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className={person.id}
+                  onClick={(e) => {
+                    handleClickRemoveFriend(e);
+                  }}
+                >
+                  Remove
+                </button>
+              </div>
+            );
+          })
+        : props.friendsInfo.length > 0
+        ? props.friendsInfo.map((person, i) => {
+            return (
+              <div key={i} className="people friends peopleInnerDiv">
+                <div>
+                  <div className={person.isOnline ? 'online' : 'offline'}></div>
+                  <span
+                    className={person.id}
+                    style={{ display: 'inline-block' }}
+                    onClick={(e) => {
+                      handleClick(e);
+                    }}
+                  >
+                    {person.first_name} {person.last_name}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className={person.id}
+                  onClick={(e) => {
+                    handleClickRemoveFriend(e);
+                  }}
+                >
+                  Remove
+                </button>
+              </div>
+            );
+          })
+        : null}
     </div>
   );
 }

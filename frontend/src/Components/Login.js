@@ -31,7 +31,7 @@ function Login(props) {
 
   return (
     <div>
-      <form>
+      <form className="logIn">
         <div>
           <label htmlFor="mail">Email:</label>
           <input type="email" id="mail" ref={mailInput} required />

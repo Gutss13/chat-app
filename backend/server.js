@@ -59,6 +59,16 @@ wss.on('connection', (ws) => {
             }
           );
         }
+        newData.instructions.forEach((element) => {
+          if (element.target) {
+            client.send(
+              JSON.stringify({
+                isTyping: element.isTyping,
+                target: element.target,
+              })
+            );
+          }
+        });
         if (newData.instructions.includes('refreshFriends')) {
           client.send('refreshFriends');
         }

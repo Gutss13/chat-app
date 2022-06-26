@@ -1,12 +1,18 @@
+body {
+  height: 100vh;
+}
 .people {
-  color: blue;
+  color: lightgreen;
   font-size: large;
 }
 .friends:hover {
   cursor: pointer;
 }
-.sender {
+.me {
   background-color: cyan;
+}
+.friend {
+  background-color: white;
 }
 .requestSent {
   font-size: 12px;
@@ -26,4 +32,144 @@
   width: 10px;
   height: 10px;
   background-color: red;
+}
+.logOut {
+  position: relative;
+  top: 5px;
+  left: 10px;
+}
+.loggedIn {
+  padding-left: 5px;
+}
+.currUser {
+  color: cyan;
+}
+.mainDiv {
+  display: flex;
+  flex-direction: row;
+  background-color: gray;
+  height: 100vh;
+}
+.peopleDiv {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  height: calc(100% - 25px);
+  border-right: 2px solid lightgray;
+  margin-left: 10px;
+  padding-right: 10px;
+}
+.inline-block {
+  display: inline-block;
+}
+.searchBar {
+  width: 70%;
+}
+.addFriendDiv {
+  margin-top: 10px;
+}
+.friendsDiv {
+  margin-top: 10px;
+  padding-top: 5px;
+  border-top: 2px solid lightgray;
+  text-align: center;
+}
+.people {
+  text-align: left;
+  padding-left: 10px;
+  margin-top: 5px;
+  background-color: darkslategray;
+  border-radius: 5px;
+}
+.peopleInnerDiv {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.chatDiv {
+  position: relative;
+  display: grid;
+  width: 100%;
+  padding-left: 10px;
+  padding-top: 5px;
+  margin-right: 10px;
+  grid-template-rows: 1fr 10fr 1fr;
+}
+.chatDiv > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: greenyellow;
+}
+.chat {
+  border: 1px solid greenyellow;
+  background-color: darkgray;
+  border-radius: 5px;
+  height: 100%;
+  overflow: scroll;
+  display: flex;
+  flex-direction: column-reverse;
+}
+.chat > div:first-child {
+  margin-bottom: 5px;
+}
+.sendTextDiv {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 11fr 1fr;
+  gap: 10px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+}
+textarea {
+  width: 100%;
+  resize: none;
+}
+.chatText {
+  display: table;
+  width: 65%;
+  min-height: 2em;
+  word-break: break-all;
+  margin-top: 5px;
+  border-radius: 6px;
+  padding: 5px;
+  line-height: 1.2em;
+}
+.me {
+  margin-right: 10px;
+  margin-left: auto;
+}
+.friend {
+  margin-left: 10px;
+}
+.emptyChat {
+  height: 100%;
+  color: green;
+  font-weight: 500;
+  font-size: large;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.friendsContainer {
+  max-height: 35vh;
+  overflow: scroll;
+}
+.peopleContainer {
+  max-height: 35vh;
+  overflow: scroll;
+}
+.sendTextDiv > div:last-child > button {
+  width: 100%;
+  height: 100%;
+}
+@media only screen and (max-width: 1024px) {
+  .chatText {
+    width: 50%;
+  }
+}
+@media only screen and (min-width: 1025px) {
+  .chatText {
+    width: 35%;
+  }
 }

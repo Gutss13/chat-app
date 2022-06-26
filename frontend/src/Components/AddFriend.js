@@ -28,7 +28,10 @@ function AddFriend(props) {
           .then((data) => {
             props.setAllPeople([...data]);
           });
-        if (searchInput.current.value) {
+        if (
+          searchInput.current !== null &&
+          searchInput.current.value !== null
+        ) {
           axios
             .get(
               `http://localhost:3000/people/${localStorage.id}/${searchInput.current.value}`
@@ -206,12 +209,13 @@ function AddFriend(props) {
         }
         props.setAllPeople([...data.allPeople]);
       });
+    if (e.target.className === props.receiver.id) {
+      props.setReceiver(null);
+    }
   };
 
   const acceptFriendRequest = async (e) => {
     e.preventDefault();
-    //add to friendList.friends for both sides
-    //remove from friendList.requests for both sides
     const friend = await axios
       .get(`http://localhost:3000/people/personbyid/${e.target.className}`)
       .then((request) => {
@@ -282,7 +286,6 @@ function AddFriend(props) {
         }
         props.setAllPeople([...data.allPeople]);
       });
-    // setFriends(current user's friendList.friends)
     const updatedRequests = incomingRequests.filter(
       (req) => req.id !== e.target.className
     );
@@ -436,19 +439,31 @@ function AddFriend(props) {
   };
   return (
     <div>
+      <FriendRequests
+        setFriends={props.setFriends}
+        setAllPeople={props.setAllPeople}
+        searchText={props.searchText}
+        setFoundPeople={props.setFoundPeople}
+        incomingRequests={incomingRequests}
+        setIncomingRequests={setIncomingRequests}
+      />
       {!isSearch ? (
-        <input
-          type="button"
-          value="Add friend"
-          onClick={() => {
-            setIsSearch(true);
-          }}
-        />
+        <div className="inline-block">
+          <input
+            type="button"
+            value="Add friend"
+            className="inline-block"
+            onClick={() => {
+              setIsSearch(true);
+            }}
+          />
+        </div>
       ) : (
         <div>
-          <div>
+          <div className="peopleInnerDiv" style={{ marginTop: '5px' }}>
             <input
               type="text"
+              className="searchBar"
               ref={searchInput}
               onChange={(e) => {
                 handleChange(e);
@@ -456,23 +471,27 @@ function AddFriend(props) {
             />
             <input
               type="button"
+              className="inline-block"
               value="Cancel"
               onClick={() => {
                 setIsSearch(false);
               }}
             />
           </div>
-          <div>
+
+          <div className="peopleContainer">
             {props.foundPeople && props.searchText
               ? props.foundPeople.map((person, i) => {
                   return (
-                    <div key={i} className="people">
-                      <div
-                        className={person.isOnline ? 'online' : 'offline'}
-                      ></div>
-                      <span>
-                        {person.first_name} {person.last_name}
-                      </span>
+                    <div key={i} className="people peopleInnerDiv">
+                      <div>
+                        <div
+                          className={person.isOnline ? 'online' : 'offline'}
+                        ></div>
+                        <span>
+                          {person.first_name} {person.last_name}
+                        </span>
+                      </div>
                       {person.friendList.friends.includes(localStorage.id) ? (
                         <input
                           type="button"
@@ -533,13 +552,15 @@ function AddFriend(props) {
               : props.allPeople
               ? props.allPeople.map((person, i) => {
                   return (
-                    <div key={i} className="people">
-                      <div
-                        className={person.isOnline ? 'online' : 'offline'}
-                      ></div>
-                      <span>
-                        {person.first_name} {person.last_name}
-                      </span>
+                    <div key={i} className="people peopleInnerDiv">
+                      <div>
+                        <div
+                          className={person.isOnline ? 'online' : 'offline'}
+                        ></div>
+                        <span>
+                          {person.first_name} {person.last_name}
+                        </span>
+                      </div>
                       {person.friendList.friends.includes(localStorage.id) ? (
                         <input
                           type="button"
@@ -601,14 +622,6 @@ function AddFriend(props) {
           </div>
         </div>
       )}
-      <FriendRequests
-        setFriends={props.setFriends}
-        setAllPeople={props.setAllPeople}
-        searchText={props.searchText}
-        setFoundPeople={props.setFoundPeople}
-        incomingRequests={incomingRequests}
-        setIncomingRequests={setIncomingRequests}
-      />
     </div>
   );
 }
