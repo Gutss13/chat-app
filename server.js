@@ -32,13 +32,13 @@ app.get('*', (req, res) => {
 
 app.use('/', cors(corsOptions), chatRouter);
 
-server.listen(3001, () => console.log('Server Started'));
+server.listen(process.env.PORT || 3001, () => console.log('Server Started'));
 
 wss.on('connection', (ws) => {
   ws.on('message', (e) => {
     const newData = JSON.parse(`${e}`);
     if ('newPerson' in newData) {
-      axios.post('http://localhost:3000/people', newData.newPerson, {
+      axios.post('/people', newData.newPerson, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -55,7 +55,7 @@ wss.on('connection', (ws) => {
           });
           if (id) {
             axios.patch(
-              `http://localhost:3000/people/${id}/${id}/${searchText}`,
+              `/people/${id}/${id}/${searchText}`,
               {
                 isOnline: false,
               },
