@@ -22,7 +22,7 @@ db.once('open', () => console.log('Connected to Database'));
 
 app.use(express.json());
 
-const chatRouter = require(path.resolve(__dirname, 'routes/router'));
+const chatRouter = require('routes/router');
 const wss = new WebSocket.Server({ server });
 
 app.use(express.static(path.resolve(__dirname, 'client/build')));
