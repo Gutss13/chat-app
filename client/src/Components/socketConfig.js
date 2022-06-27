@@ -1,5 +1,5 @@
-const ws = new WebSocket(
-  `ws://chat-app-guts.herokuapp.com/${process.env.PORT || 3000}`
-);
+const HOST = location.origin.replace(/^https/, 'ws');
+
+const ws = new WebSocket(HOST);
 
 export default ws;
