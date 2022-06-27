@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server/index.js",
     "devStart": "nodemon server.js",
-    "build": "cd ../client && npm install && npm run build"
+    "build": "cd client && npm install && npm run build"
   },
   "keywords": [],
   "engines": {
