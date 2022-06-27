@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const axios = require('axios');
 const cors = require('cors');
 const express = require('express');
@@ -7,7 +9,7 @@ const server = http.createServer(app);
 const mongoose = require('mongoose');
 const WebSocket = require('ws');
 const path = require('path');
-require('dotenv').config()({ path: 'ENV_FILENAME' });
+
 var corsOptions = {
   origin: '*',
   optionsSuccessStatus: 200,
