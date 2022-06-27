@@ -9,7 +9,7 @@
   },
   "keywords": [],
   "engines": {
-    "node": "your-version"
+    "node": "17.1.0"
   },
   "author": "",
   "license": "ISC",
