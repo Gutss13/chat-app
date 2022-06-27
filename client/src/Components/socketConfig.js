@@ -1,3 +1,3 @@
-const ws = new WebSocket('ws://chat-app-guts.herokuapp.com');
+const ws = new WebSocket('ws://localhost:3001');
 
 export default ws;
