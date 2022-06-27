@@ -1,0 +1,15 @@
+GET http://localhost:3000/chat
+
+###
+
+GET http://localhost:3000/chat/me
+
+###
+
+POST  http://localhost:3000/chat
+Content-Type: application/json
+
+{
+    "name": "me",
+    "chatData": "1212"
+}
