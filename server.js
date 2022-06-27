@@ -8,6 +8,7 @@ const app = express();
 const server = http.createServer(app);
 const mongoose = require('mongoose');
 const WebSocket = require('ws');
+const path = require('path');
 
 var corsOptions = {
   origin: '*',
