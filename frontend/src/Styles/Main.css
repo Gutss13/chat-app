@@ -5,14 +5,16 @@ body {
   color: lightgreen;
   font-size: large;
 }
+.people > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.people > div:first-child > div {
+  min-width: 10px;
+}
 .friends:hover {
   cursor: pointer;
-}
-.me {
-  background-color: cyan;
-}
-.friend {
-  background-color: white;
 }
 .requestSent {
   font-size: 12px;
@@ -25,6 +27,7 @@ body {
   width: 10px;
   height: 10px;
   background-color: green;
+  border-radius: 50px;
 }
 .offline {
   display: inline-block;
@@ -32,6 +35,7 @@ body {
   width: 10px;
   height: 10px;
   background-color: red;
+  border-radius: 50px;
 }
 .logOut {
   position: relative;
@@ -135,12 +139,30 @@ textarea {
   padding: 5px;
   line-height: 1.2em;
 }
+.isTyping {
+  padding-top: 5px;
+  margin-left: 15px;
+  padding-bottom: 5px;
+}
 .me {
   margin-right: 10px;
   margin-left: auto;
+  background-color: cyan;
 }
 .friend {
   margin-left: 10px;
+  background-color: white;
+}
+.myTextDate {
+  text-align: end;
+  margin-right: 15px;
+  font-size: small;
+  padding-top: 5px;
+}
+.friendTextDate {
+  margin-left: 15px;
+  font-size: small;
+  padding-top: 5px;
 }
 .emptyChat {
   height: 100%;
@@ -162,6 +184,24 @@ textarea {
 .sendTextDiv > div:last-child > button {
   width: 100%;
   height: 100%;
+}
+input[value='Remove'] {
+  color: red;
+}
+input[value='Reject'] {
+  color: red;
+}
+input[value='Accept'] {
+  color: green;
+}
+input[value='Add'] {
+  color: green;
+}
+.isSeen {
+  font-size: small;
+  text-align: end;
+  margin-right: 15px;
+  padding-top: 5px;
 }
 @media only screen and (max-width: 1024px) {
   .chatText {

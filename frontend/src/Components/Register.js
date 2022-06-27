@@ -9,29 +9,69 @@ function Register(props) {
   const mailInput = useRef(null);
   const passwordInput = useRef(null);
   const idInput = useRef(null);
-  const [mailValidate, setMailValidate] = useState();
+  const [validationError, setValidationError] = useState({
+    'first name': '',
+    'last name': '',
+    mail: '',
+    password: '',
+  });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (
-      firstNameInput.current.value &&
-      lastNameInput.current.value &&
-      mailInput.current.value &&
-      passwordInput.current.value
-    ) {
+    const validationErrorCopy = {
+      'first name': '',
+      'last name': '',
+      mail: '',
+      password: '',
+    };
+    if (!firstNameInput.current.value.length) {
+      validationErrorCopy['first name'] = 'First name is required';
+    } else if (firstNameInput.current.value.length < 4) {
+      validationErrorCopy['first name'] =
+        'Your first name should have at least 4 letters';
+    }
+    if (!firstNameInput.current.value.length) {
+      validationErrorCopy['last name'] = 'Last name is required';
+    } else if (lastNameInput.current.value.length < 4) {
+      validationErrorCopy['last name'] =
+        'Your last name should have at least 4 letters';
+    }
+    if (!mailInput.current.value) {
+      validationErrorCopy.mail = 'Email is required';
+    } else if (!mailInput.current.value.match(/^\S+@\S+\.\S+$/)) {
+      validationErrorCopy.mail = 'Enter valid email';
+    } else {
       axios
-        .get(`http://localhost:3000/people/person/${mailInput.current.value}`)
+        .post(
+          `http://localhost:3000/people/person`,
+          { email: mailInput.current.value },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        )
         .then((request) => {
           return request.data;
         })
         .then((data) => {
-          setMailValidate(data);
+          if (data.length > 0)
+            validationErrorCopy.mail = 'This email is already used';
         });
     }
-  };
-
-  useEffect(() => {
-    if (mailValidate && mailValidate.length === 0) {
+    if (!passwordInput.current.value.length) {
+      validationErrorCopy.password = 'Password is required';
+    } else if (passwordInput.current.value.length < 6) {
+      validationErrorCopy.password =
+        'Your password should have at least 6 letters';
+    }
+    setValidationError({ ...validationError, ...validationErrorCopy });
+    if (
+      validationErrorCopy['first name'] === '' &&
+      validationErrorCopy['last name'] === '' &&
+      validationErrorCopy.mail === '' &&
+      validationErrorCopy.password === ''
+    ) {
       ws.send(
         JSON.stringify({
           newPerson: {
@@ -41,13 +81,13 @@ function Register(props) {
             password: passwordInput.current.value,
             id: idInput.current.value,
           },
-          instructions: ['refreshPeople'],
+          instructions: { instruction: ['refreshPeople'], me: localStorage.id },
         })
       );
       localStorage.setItem('id', idInput.current.value);
       props.setIsLoggedIn(true);
     }
-  }, [mailValidate]);
+  };
 
   return (
     <div>
@@ -55,21 +95,22 @@ function Register(props) {
         <div>
           <label htmlFor="first_name">First Name*:</label>
           <input type="text" id="first_name" ref={firstNameInput} required />
+          <div className="validationDiv">{validationError['first name']}</div>
         </div>
         <div>
           <label htmlFor="">Last Name*:</label>
           <input type="text" id="last_name" ref={lastNameInput} required />
+          <div className="validationDiv">{validationError['last name']}</div>
         </div>
         <div>
           <label htmlFor="mail">Email*:</label>
           <input type="email" id="mail" ref={mailInput} required />
-          {mailValidate &&
-            mailValidate.length > 0 &&
-            'This mail is already used'}
+          <div className="validationDiv">{validationError.mail}</div>
         </div>
         <div>
           <label htmlFor="password">Password*:</label>
           <input type="password" id="password" ref={passwordInput} required />
+          <div className="validationDiv">{validationError.password}</div>
         </div>
         <input type="hidden" value={uuidv4()} required ref={idInput} />
         <div>
@@ -80,7 +121,7 @@ function Register(props) {
               handleSubmit(e);
             }}
           >
-            submit
+            Submit
           </button>
         </div>
       </form>

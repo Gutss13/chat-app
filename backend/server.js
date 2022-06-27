@@ -42,44 +42,81 @@ wss.on('connection', (ws) => {
       if ('instructions' in newData) {
         let id;
         let searchText;
-        newData.instructions.forEach((element) => {
-          if (element.id) id = element.id;
-          if (element.searchText) searchText = element.searchText;
-        });
-        if (id) {
-          axios.patch(
-            `http://localhost:3000/people/${id}/${id}/${searchText}`,
-            {
-              isOnline: false,
-            },
-            {
-              headers: {
-                'Content-Type': 'application/json',
+        if (Array.isArray(newData.instructions)) {
+          newData.instructions.forEach((element) => {
+            if (element.id) id = element.id;
+            if (element.searchText) searchText = element.searchText;
+          });
+          if (id) {
+            axios.patch(
+              `http://localhost:3000/people/${id}/${id}/${searchText}`,
+              {
+                isOnline: false,
               },
-            }
-          );
-        }
-        newData.instructions.forEach((element) => {
-          if (element.target) {
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
+          }
+          if (newData.instructions[0].isTypingTarget) {
             client.send(
               JSON.stringify({
-                isTyping: element.isTyping,
-                target: element.target,
+                isTyping: newData.instructions[0].isTyping,
+                isTypingTarget: newData.instructions[0].isTypingTarget,
               })
             );
           }
-        });
-        if (newData.instructions.includes('refreshFriends')) {
-          client.send('refreshFriends');
+          if (newData.instructions[0].isSeenTarget) {
+            client.send(
+              JSON.stringify({
+                isSeen: newData.instructions[0].isSeen,
+                isSeenTarget: newData.instructions[0].isSeenTarget,
+              })
+            );
+          }
         }
-        if (newData.instructions.includes('refreshChat')) {
-          client.send('refreshChat');
-        }
-        if (newData.instructions.includes('refreshPeople')) {
-          client.send('refreshPeople');
-        }
-        if (newData.instructions.includes('refreshRequests')) {
-          client.send('refreshRequests');
+        if (newData.instructions.instruction) {
+          if (newData.instructions.instruction.includes('refreshFriends')) {
+            client.send(
+              JSON.stringify({
+                instruction: 'refreshFriends',
+                me: newData.instructions.me,
+              })
+            );
+          }
+          if (newData.instructions.instruction.includes('refreshChat')) {
+            client.send(
+              JSON.stringify({
+                instruction: 'refreshChat',
+              })
+            );
+          }
+          if (newData.instructions.instruction.includes('refreshPeople')) {
+            client.send(
+              JSON.stringify({
+                instruction: 'refreshPeople',
+                me: newData.instructions.me,
+              })
+            );
+          }
+          if (newData.instructions.instruction.includes('refreshRequests')) {
+            client.send(
+              JSON.stringify({
+                instruction: 'refreshRequests',
+                me: newData.instructions.me,
+              })
+            );
+          }
+          if (newData.instructions.instruction.includes('removeReceiver')) {
+            client.send(
+              JSON.stringify({
+                instruction: 'removeReceiver',
+                me: newData.instructions.me,
+              })
+            );
+          }
         }
       }
     });

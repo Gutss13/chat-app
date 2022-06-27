@@ -30,8 +30,8 @@ function Login(props) {
   }, [user]);
 
   return (
-    <div>
-      <form className="logIn">
+    <div className="logIn">
+      <form>
         <div>
           <label htmlFor="mail">Email:</label>
           <input type="email" id="mail" ref={mailInput} required />
@@ -47,7 +47,7 @@ function Login(props) {
               handleSubmit(e);
             }}
           >
-            submit
+            Submit
           </button>
         </div>
       </form>

@@ -25,17 +25,20 @@ function FriendRequests(props) {
                 })
                 .then((reqSender) => {
                   incomingRequestsCopy.push(reqSender[0]);
+                  props.setIncomingRequests([...incomingRequestsCopy]);
                 });
             });
           } else {
             props.setIncomingRequests([]);
           }
-          props.setIncomingRequests(incomingRequestsCopy);
         }
       });
     ws.addEventListener('message', (e) => {
-      const newData = e.data;
-      if (newData === 'refreshRequests') {
+      const newData = JSON.parse(e.data);
+      if (
+        newData.instruction === 'refreshRequests' &&
+        newData.me !== localStorage.id
+      ) {
         axios
           .get(`http://localhost:3000/people/personbyid/${localStorage.id}`)
           .then((request) => {
@@ -58,13 +61,13 @@ function FriendRequests(props) {
                       })
                       .then((reqSender) => {
                         incomingRequestsCopy.push(reqSender[0]);
+                        props.setIncomingRequests([...incomingRequestsCopy]);
                       });
                   }
                 );
               } else {
                 props.setIncomingRequests([]);
               }
-              props.setIncomingRequests(incomingRequestsCopy);
             }
           });
       }
@@ -97,6 +100,7 @@ function FriendRequests(props) {
       (key) => friend.friendList.requests.sent[key] === localStorage.id
     );
     delete friend.friendList.requests.sent[sentKeyName];
+    props.setFriends([...me.friendList.friends, e.target.className]);
     axios
       .patch(
         `http://localhost:3000/people/${localStorage.id}/${localStorage.id}/${props.searchText}`,
@@ -115,7 +119,10 @@ function FriendRequests(props) {
       .then(() =>
         ws.send(
           JSON.stringify({
-            instructions: ['refreshFriends', 'refreshRequests'],
+            instructions: {
+              instruction: ['refreshFriends', 'refreshRequests'],
+              me: localStorage.id,
+            },
           })
         )
       );
@@ -140,9 +147,17 @@ function FriendRequests(props) {
       })
       .then((data) => {
         if (props.searchText) {
-          props.setFoundPeople([...data.foundPeople]);
+          props.setFoundPeople(
+            data.foundPeople.sort((a, b) => {
+              return b.isOnline - a.isOnline;
+            })
+          );
         }
-        props.setAllPeople([...data.allPeople]);
+        props.setAllPeople(
+          data.allPeople.sort((a, b) => {
+            return b.isOnline - a.isOnline;
+          })
+        );
       });
     const updatedRequests = props.incomingRequests.filter(
       (req) => req.id !== e.target.className
@@ -192,7 +207,14 @@ function FriendRequests(props) {
         }
       )
       .then(() => {
-        ws.send(JSON.stringify({ instructions: ['refreshRequests'] }));
+        ws.send(
+          JSON.stringify({
+            instructions: {
+              instruction: ['refreshRequests'],
+              me: localStorage.id,
+            },
+          })
+        );
       });
     axios
       .patch(
@@ -214,9 +236,17 @@ function FriendRequests(props) {
       })
       .then((data) => {
         if (props.searchText) {
-          props.setFoundPeople([...data.foundPeople]);
+          props.setFoundPeople(
+            data.foundPeople.sort((a, b) => {
+              return b.isOnline - a.isOnline;
+            })
+          );
         }
-        props.setAllPeople([...data.allPeople]);
+        props.setAllPeople(
+          data.allPeople.sort((a, b) => {
+            return b.isOnline - a.isOnline;
+          })
+        );
       });
     const updatedRequests = props.incomingRequests.filter(
       (req) => req.id !== e.target.className
@@ -224,10 +254,15 @@ function FriendRequests(props) {
     props.setIncomingRequests(updatedRequests);
   };
 
+  useEffect(() => {
+    if (props.incomingRequests.length === 0) {
+      setIsRequestsShown(false);
+    }
+  }, [props.incomingRequests]);
+
   return (
     <>
       <button
-        type="button"
         className="inline-block"
         onClick={() => setIsRequestsShown(!isRequestsShown)}
       >
@@ -238,30 +273,27 @@ function FriendRequests(props) {
             return (
               <div key={i} className="people peopleInnerDiv">
                 <div>
-                  <span>
+                  <div>
                     {element.first_name} {element.last_name}
-                  </span>
+                  </div>
                 </div>
                 <div>
-                  <button
+                  <input
                     type="button"
                     value="Accept"
                     className={element.id}
                     onClick={(e) => {
                       acceptFriendRequest(e);
                     }}
-                  >
-                    Accept
-                  </button>
-                  <button
+                  />
+                  <input
+                    type="button"
                     value="Reject"
                     className={element.id}
                     onClick={(e) => {
                       rejectFriendRequest(e);
                     }}
-                  >
-                    Reject
-                  </button>
+                  />
                 </div>
               </div>
             );

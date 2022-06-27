@@ -13,15 +13,20 @@ function Friends(props) {
         if (data[0]) props.setFriends([...data[0].friendList.friends]);
       });
     ws.addEventListener('message', (e) => {
-      const newData = e.data;
-      if (newData === 'refreshFriends') {
+      const newData = JSON.parse(e.data);
+      if (
+        newData.instruction === 'refreshFriends' &&
+        newData.me !== localStorage.id
+      ) {
         axios
           .get(`http://localhost:3000/people/personbyid/${localStorage.id}`)
           .then((request) => {
             return request.data;
           })
           .then((data) => {
-            if (data[0]) props.setFriends([...data[0].friendList.friends]);
+            if (data[0]) {
+              props.setFriends([...data[0].friendList.friends]);
+            }
           });
       }
     });
@@ -89,12 +94,25 @@ function Friends(props) {
       })
       .then((data) => {
         if (props.searchText) {
-          props.setFoundPeople([...data.foundPeople]);
+          props.setFoundPeople(
+            data.foundPeople.sort((a, b) => {
+              return b.isOnline - a.isOnline;
+            })
+          );
         }
-        props.setAllPeople([...data.allPeople]);
+        props.setAllPeople(
+          data.allPeople.sort((a, b) => {
+            return b.isOnline - a.isOnline;
+          })
+        );
 
         ws.send(
-          JSON.stringify({ instructions: ['refreshFriends', 'refreshPeople'] })
+          JSON.stringify({
+            instructions: {
+              instruction: ['refreshFriends', 'refreshPeople'],
+              me: localStorage.id,
+            },
+          })
         );
       });
     axios.patch(
@@ -112,9 +130,18 @@ function Friends(props) {
       }
     );
     props.setFriends([...myFriendList]);
-    if (e.target.className === props.receiver.id) {
+    if (props.receiver && e.target.className === props.receiver.id) {
       props.setReceiver(null);
+      ws.send(
+        JSON.stringify({
+          instructions: {
+            instruction: ['removeReceiver'],
+            me: e.target.className,
+          },
+        })
+      );
     }
+    props.setIsSeen(false);
   };
 
   return (
@@ -125,24 +152,23 @@ function Friends(props) {
               <div key={i} className="people friends peopleInnerDiv">
                 <div>
                   <div className={person.isOnline ? 'online' : 'offline'}></div>
-                  <span
+                  <div
                     className={person.id}
                     onClick={(e) => {
                       handleClick(e);
                     }}
                   >
                     {person.first_name} {person.last_name}
-                  </span>
+                  </div>
                 </div>
-                <button
+                <input
                   type="button"
+                  value="Remove"
                   className={person.id}
                   onClick={(e) => {
                     handleClickRemoveFriend(e);
                   }}
-                >
-                  Remove
-                </button>
+                />
               </div>
             );
           })
@@ -151,26 +177,31 @@ function Friends(props) {
             return (
               <div key={i} className="people friends peopleInnerDiv">
                 <div>
-                  <div className={person.isOnline ? 'online' : 'offline'}></div>
-                  <span
-                    className={person.id}
-                    style={{ display: 'inline-block' }}
-                    onClick={(e) => {
-                      handleClick(e);
-                    }}
-                  >
-                    {person.first_name} {person.last_name}
-                  </span>
+                  <div>
+                    <div
+                      className={
+                        person && person.isOnline ? 'online' : 'offline'
+                      }
+                    ></div>
+                    <div
+                      className={person && person.id}
+                      style={{ display: 'inline-block' }}
+                      onClick={(e) => {
+                        handleClick(e);
+                      }}
+                    >
+                      {person && person.first_name} {person && person.last_name}
+                    </div>
+                  </div>
                 </div>
-                <button
+                <input
                   type="button"
-                  className={person.id}
+                  value="Remove"
+                  className={person && person.id}
                   onClick={(e) => {
                     handleClickRemoveFriend(e);
                   }}
-                >
-                  Remove
-                </button>
+                />
               </div>
             );
           })

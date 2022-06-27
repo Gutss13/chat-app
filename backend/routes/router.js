@@ -5,16 +5,18 @@ const People = require('../models/people');
 
 router.get('/people/:sender_id', async (req, res) => {
   try {
-    const people = await People.find({ id: { $ne: req.params.sender_id } });
+    const people = await People.find({
+      id: { $ne: req.params.sender_id },
+    });
     res.json(people);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-router.get('/people/person/:email', async (req, res) => {
+router.post('/people/person', async (req, res) => {
   try {
-    const people = await People.find({ email: req.params.email });
+    const people = await People.find({ email: req.body.email });
     res.json(people);
   } catch (err) {
     res.status(500).json({ message: err.message });

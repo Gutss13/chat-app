@@ -20,10 +20,17 @@ function SearchBar(props) {
             data.forEach((obj2) => {
               if (JSON.stringify(obj1) === JSON.stringify(obj2)) {
                 foundFriendsCopy.push(obj1);
+                foundFriendsCopy.sort((a, b) => {
+                  return b.isOnline - a.isOnline;
+                });
               }
             });
           });
-          props.setFoundFriends([...foundFriendsCopy]);
+          props.setFoundFriends(
+            foundFriendsCopy.sort((a, b) => {
+              return b.isOnline - a.isOnline;
+            })
+          );
         });
     } else {
       props.setFoundFriends([]);

@@ -14,19 +14,31 @@ function AddFriend(props) {
         return request.data;
       })
       .then((data) => {
-        props.setAllPeople([...data]);
+        props.setAllPeople(
+          data.sort((a, b) => {
+            return b.isOnline - a.isOnline;
+          })
+        );
       });
 
     ws.addEventListener('message', (e) => {
-      const newData = e.data;
-      if (newData === 'refreshPeople' || newData === 'refreshRequests') {
+      const newData = JSON.parse(e.data);
+      if (
+        (newData.instruction === 'refreshPeople' ||
+          newData.instruction === 'refreshRequests') &&
+        newData.me !== localStorage.id
+      ) {
         axios
           .get(`http://localhost:3000/people/${localStorage.id}`)
           .then((request) => {
             return request.data;
           })
           .then((data) => {
-            props.setAllPeople([...data]);
+            props.setAllPeople(
+              data.sort((a, b) => {
+                return b.isOnline - a.isOnline;
+              })
+            );
           });
         if (
           searchInput.current !== null &&
@@ -40,7 +52,11 @@ function AddFriend(props) {
               return request.data;
             })
             .then((data) => {
-              props.setFoundPeople([...data]);
+              props.setFoundPeople(
+                data.sort((a, b) => {
+                  return b.isOnline - a.isOnline;
+                })
+              );
             });
         }
       }
@@ -58,7 +74,11 @@ function AddFriend(props) {
           return request.data;
         })
         .then((data) => {
-          props.setFoundPeople([...data]);
+          props.setFoundPeople(
+            data.sort((a, b) => {
+              return b.isOnline - a.isOnline;
+            })
+          );
         });
     } else {
       props.setFoundPeople(null);
@@ -107,7 +127,14 @@ function AddFriend(props) {
         }
       )
       .then(() => {
-        ws.send(JSON.stringify({ instructions: ['refreshRequests'] }));
+        ws.send(
+          JSON.stringify({
+            instructions: {
+              instruction: ['refreshRequests'],
+              me: localStorage.id,
+            },
+          })
+        );
       });
     axios
       .patch(
@@ -135,9 +162,17 @@ function AddFriend(props) {
       })
       .then((data) => {
         if (props.searchText) {
-          props.setFoundPeople([...data.foundPeople]);
+          props.setFoundPeople(
+            data.foundPeople.sort((a, b) => {
+              return b.isOnline - a.isOnline;
+            })
+          );
         }
-        props.setAllPeople([...data.allPeople]);
+        props.setAllPeople(
+          data.allPeople.sort((a, b) => {
+            return b.isOnline - a.isOnline;
+          })
+        );
       });
   };
 
@@ -165,6 +200,8 @@ function AddFriend(props) {
     const friendFriendList = friend.friendList.friends.filter(
       (val) => val !== localStorage.id
     );
+    props.setFriends([...meFriendList]);
+
     axios
       .patch(
         `http://localhost:3000/people/${localStorage.id}/${localStorage.id}/${props.searchText}`,
@@ -182,7 +219,12 @@ function AddFriend(props) {
       )
       .then(() => {
         ws.send(
-          JSON.stringify({ instructions: ['refreshFriends', 'refreshPeople'] })
+          JSON.stringify({
+            instructions: {
+              instruction: ['refreshFriends', 'refreshPeople'],
+              me: localStorage.id,
+            },
+          })
         );
       });
     axios
@@ -205,13 +247,30 @@ function AddFriend(props) {
       })
       .then((data) => {
         if (props.searchText) {
-          props.setFoundPeople([...data.foundPeople]);
+          props.setFoundPeople(
+            data.foundPeople.sort((a, b) => {
+              return b.isOnline - a.isOnline;
+            })
+          );
         }
-        props.setAllPeople([...data.allPeople]);
+        props.setAllPeople(
+          data.allPeople.sort((a, b) => {
+            return b.isOnline - a.isOnline;
+          })
+        );
       });
-    if (e.target.className === props.receiver.id) {
+    if (props.receiver && e.target.className === props.receiver.id) {
       props.setReceiver(null);
+      ws.send(
+        JSON.stringify({
+          instructions: {
+            instruction: ['removeReceiver'],
+            me: e.target.className,
+          },
+        })
+      );
     }
+    props.setIsSeen(false);
   };
 
   const acceptFriendRequest = async (e) => {
@@ -240,6 +299,7 @@ function AddFriend(props) {
       (key) => friend.friendList.requests.sent[key] === localStorage.id
     );
     delete friend.friendList.requests.sent[sentKeyName];
+    props.setFriends([...me.friendList.friends, e.target.className]);
     axios
       .patch(
         `http://localhost:3000/people/${localStorage.id}/${localStorage.id}/${props.searchText}`,
@@ -258,7 +318,10 @@ function AddFriend(props) {
       .then(() => {
         ws.send(
           JSON.stringify({
-            instructions: ['refreshRequests', 'refreshFriends'],
+            instructions: {
+              instruction: ['refreshFriends', 'refreshRequests'],
+              me: localStorage.id,
+            },
           })
         );
       });
@@ -282,9 +345,17 @@ function AddFriend(props) {
       })
       .then((data) => {
         if (props.searchText) {
-          props.setFoundPeople([...data.foundPeople]);
+          props.setFoundPeople(
+            data.foundPeople.sort((a, b) => {
+              return b.isOnline - a.isOnline;
+            })
+          );
         }
-        props.setAllPeople([...data.allPeople]);
+        props.setAllPeople(
+          data.allPeople.sort((a, b) => {
+            return b.isOnline - a.isOnline;
+          })
+        );
       });
     const updatedRequests = incomingRequests.filter(
       (req) => req.id !== e.target.className
@@ -334,7 +405,14 @@ function AddFriend(props) {
         }
       )
       .then(() => {
-        ws.send(JSON.stringify({ instructions: ['refreshRequests'] }));
+        ws.send(
+          JSON.stringify({
+            instructions: {
+              instruction: ['refreshRequests'],
+              me: localStorage.id,
+            },
+          })
+        );
       });
     axios
       .patch(
@@ -356,9 +434,17 @@ function AddFriend(props) {
       })
       .then((data) => {
         if (props.searchText) {
-          props.setFoundPeople([...data.foundPeople]);
+          props.setFoundPeople(
+            data.foundPeople.sort((a, b) => {
+              return b.isOnline - a.isOnline;
+            })
+          );
         }
-        props.setAllPeople([...data.allPeople]);
+        props.setAllPeople(
+          data.allPeople.sort((a, b) => {
+            return b.isOnline - a.isOnline;
+          })
+        );
       });
     const updatedRequests = incomingRequests.filter(
       (req) => req.id !== e.target.className
@@ -409,7 +495,12 @@ function AddFriend(props) {
       )
       .then(() => {
         ws.send(
-          JSON.stringify({ instructions: ['refreshPeople', 'refreshRequests'] })
+          JSON.stringify({
+            instructions: {
+              instruction: ['refreshRequests', 'refreshPeople'],
+              me: localStorage.id,
+            },
+          })
         );
       });
     axios
@@ -432,9 +523,17 @@ function AddFriend(props) {
       })
       .then((data) => {
         if (props.searchText) {
-          props.setFoundPeople([...data.foundPeople]);
+          props.setFoundPeople(
+            data.foundPeople.sort((a, b) => {
+              return b.isOnline - a.isOnline;
+            })
+          );
         }
-        props.setAllPeople([...data.allPeople]);
+        props.setAllPeople(
+          data.allPeople.sort((a, b) => {
+            return b.isOnline - a.isOnline;
+          })
+        );
       });
   };
   return (
@@ -451,6 +550,7 @@ function AddFriend(props) {
         <div className="inline-block">
           <input
             type="button"
+            style={{ marginTop: '5px' }}
             value="Add friend"
             className="inline-block"
             onClick={() => {
@@ -488,9 +588,9 @@ function AddFriend(props) {
                         <div
                           className={person.isOnline ? 'online' : 'offline'}
                         ></div>
-                        <span>
+                        <div>
                           {person.first_name} {person.last_name}
-                        </span>
+                        </div>
                       </div>
                       {person.friendList.friends.includes(localStorage.id) ? (
                         <input
@@ -518,25 +618,22 @@ function AddFriend(props) {
                             localStorage.id
                         ) ? (
                         <div>
-                          <button
+                          <input
                             type="button"
                             value="Accept"
                             className={person.id}
                             onClick={(e) => {
                               acceptFriendRequest(e);
                             }}
-                          >
-                            Accept
-                          </button>
-                          <button
+                          />
+                          <input
+                            type="button"
                             value="Reject"
                             className={person.id}
                             onClick={(e) => {
                               rejectFriendRequest(e);
                             }}
-                          >
-                            Reject
-                          </button>
+                          />
                         </div>
                       ) : (
                         <input
@@ -557,9 +654,9 @@ function AddFriend(props) {
                         <div
                           className={person.isOnline ? 'online' : 'offline'}
                         ></div>
-                        <span>
+                        <div>
                           {person.first_name} {person.last_name}
-                        </span>
+                        </div>
                       </div>
                       {person.friendList.friends.includes(localStorage.id) ? (
                         <input

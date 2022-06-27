@@ -1,26 +1,42 @@
-@media only screen and (max-width: 600px) {
-  .authorization {
-    background-color: gray;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-  .authorization > div:first-child {
-    margin-bottom: 5px;
-    width: 60%;
-    display: flex;
-    justify-content: space-evenly;
-  }
-  .logIn > div {
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-  }
-  .register > div {
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-  }
+.authorization {
+  background-color: gray;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.authorization > div:first-child {
+  margin-bottom: 5px;
+  width: 200px;
+  position: relative;
+}
+.authorization > div:first-child > button:last-child {
+  position: absolute;
+  right: 0px;
+}
+.logIn > form > div {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+.register > div {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+form > div {
+  margin-top: 5px;
+}
+form {
+  display: block;
+  width: 250px;
+}
+label {
+  margin-bottom: 5px;
+}
+.validationDiv {
+  font-size: smaller;
+  color: darkred;
+  margin-top: 3px;
 }

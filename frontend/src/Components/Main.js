@@ -21,6 +21,7 @@ function Main(props) {
   const [foundFriends, setFoundFriends] = useState([]);
   const [friendSearchText, setFriendSearchText] = useState('');
   const [currUser, setCurrUser] = useState('');
+  const [isSeen, setIsSeen] = useState(false);
   const textInput = useRef(null);
 
   useEffect(() => {
@@ -34,6 +35,9 @@ function Main(props) {
           })
           .then((data) => {
             friendsInfoCopy.push(data[0]);
+            friendsInfoCopy.sort((a, b) => {
+              return b.isOnline - a.isOnline;
+            });
             setFriendsInfo([...friendsInfoCopy]);
           });
       });
@@ -68,7 +72,10 @@ function Main(props) {
       .then(() => {
         ws.send(
           JSON.stringify({
-            instructions: ['refreshFriends', 'refreshPeople'],
+            instructions: {
+              instruction: ['refreshFriends', 'refreshPeople'],
+              me: localStorage.id,
+            },
           })
         );
       });
@@ -76,25 +83,36 @@ function Main(props) {
     window.addEventListener('beforeunload', () => {
       ws.send(
         JSON.stringify({
-          instructions: [
-            'refreshFriends',
-            'refreshPeople',
-            { id: localStorage.id, searchText: searchText },
-          ],
+          instructions: {
+            instruction: ['refreshFriends', 'refreshPeople'],
+            searchText: { id: localStorage.id, searchText: searchText },
+          },
         })
       );
     });
 
     ws.addEventListener('message', (e) => {
+      const newData = JSON.parse(e.data);
       if (
-        e.data !== 'refreshPeople' &&
-        e.data !== 'refreshRequests' &&
-        e.data !== 'refreshChat' &&
-        e.data !== 'refreshFriends'
+        newData.instruction === 'removeReceiver' &&
+        newData.me === localStorage.id
       ) {
-        const newData = JSON.parse(e.data);
-        if (newData && newData.target === localStorage.id) {
+        setReceiver(null);
+      }
+      if (
+        newData.instruction !== 'refreshPeople' &&
+        newData.instruction !== 'refreshRequests' &&
+        newData.instruction !== 'refreshChat' &&
+        newData.instruction !== 'refreshFriends'
+      ) {
+        if (
+          newData.isTypingTarget &&
+          newData.isTypingTarget === localStorage.id
+        ) {
           setIsFriendTyping(newData.isTyping);
+        }
+        if (newData.isSeenTarget && newData.isSeenTarget === localStorage.id) {
+          setIsSeen(newData.isSeen);
         }
       }
     });
@@ -108,8 +126,8 @@ function Main(props) {
 
   useEffect(() => {
     ws.addEventListener('message', (e) => {
-      const newData = e.data;
-      if (newData === 'refreshChat' && receiver) {
+      const newData = JSON.parse(e.data);
+      if (newData.instruction === 'refreshChat' && receiver) {
         axios
           .get(`http://localhost:3000/chat/${receiver.id}/${localStorage.id}`)
           .then((request) => {
@@ -139,7 +157,11 @@ function Main(props) {
         }
       )
       .then(() => {
-        ws.send(JSON.stringify({ instructions: ['refreshChat'] }));
+        ws.send(
+          JSON.stringify({
+            instructions: { instruction: ['refreshChat'] },
+          })
+        );
         e.target.parentNode.previousSibling.lastChild.value = '';
       });
   };
@@ -156,7 +178,7 @@ function Main(props) {
     if (isTyping !== null) {
       ws.send(
         JSON.stringify({
-          instructions: [{ isTyping: isTyping, target: receiver.id }],
+          instructions: [{ isTyping: isTyping, isTypingTarget: receiver.id }],
         })
       );
     }
@@ -184,7 +206,10 @@ function Main(props) {
                 .then(() => {
                   ws.send(
                     JSON.stringify({
-                      instructions: ['refreshFriends', 'refreshPeople'],
+                      instructions: {
+                        instruction: ['refreshFriends', 'refreshPeople'],
+                        me: localStorage.id,
+                      },
                     })
                   );
                 });
@@ -195,7 +220,7 @@ function Main(props) {
             Log Out
           </button>
           <span className="loggedIn">Logged in: </span>
-          <span className="currUser">{currUser.full_name}</span>
+          <span className="currUser">{currUser && currUser.full_name}</span>
         </div>
         <div className="peopleDiv">
           <div className="addFriendDiv">
@@ -209,6 +234,7 @@ function Main(props) {
               setFoundPeople={setFoundPeople}
               allPeople={allPeople}
               setAllPeople={setAllPeople}
+              setIsSeen={setIsSeen}
             />
           </div>
           <div className="friendsDiv">
@@ -220,6 +246,7 @@ function Main(props) {
               friendsInfo={friendsInfo}
               friendSearchText={friendSearchText}
               setFriendSearchText={setFriendSearchText}
+              setIsSeen={setIsSeen}
             />
             <Friends
               friendsInfo={friendsInfo}
@@ -234,6 +261,7 @@ function Main(props) {
               foundFriends={foundFriends}
               friendSearchText={friendSearchText}
               setFriendSearchText={setFriendSearchText}
+              setIsSeen={setIsSeen}
             />
           </div>
         </div>
@@ -241,6 +269,9 @@ function Main(props) {
       <div className="chatDiv">
         <div>{receiver && `To: ${receiver.name}`}</div>
         <div className="chat">
+          <div className="isTyping">{isFriendTyping ? 'Typing...' : null}</div>
+          <div className="isSeen">{isSeen ? 'Seen' : null}</div>
+
           {chat && receiver ? (
             <Chat chat={chat} />
           ) : (
@@ -249,13 +280,26 @@ function Main(props) {
         </div>
         {receiver && (
           <div>
-            <div>{isFriendTyping ? 'Typing...' : null}</div>
             <div className="sendTextDiv">
               <div>
                 <textarea
                   rows="5"
                   onChange={(e) => {
                     handleChangeTyping(e);
+                  }}
+                  onFocus={() => {
+                    if (chat[0] && chat[0].sender_id !== localStorage.id) {
+                      ws.send(
+                        JSON.stringify({
+                          instructions: [
+                            {
+                              isSeen: true,
+                              isSeenTarget: chat[0].sender_id,
+                            },
+                          ],
+                        })
+                      );
+                    }
                   }}
                   ref={textInput}
                 ></textarea>
@@ -266,6 +310,9 @@ function Main(props) {
                   onClick={(e) => {
                     handleSendClick(e);
                     setIsTyping(false);
+                    if (isSeen) {
+                      setIsSeen(false);
+                    }
                   }}
                 >
                   Send
