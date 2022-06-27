@@ -1,4 +1,4 @@
-const HOST = location.origin.replace(/^https/, 'ws'); // eslint-disable-line
+const HOST = window.location.origin.replace(/^https/, 'ws');
 
 const ws = new WebSocket(HOST);
 
