@@ -5,7 +5,7 @@ import ws from './socketConfig';
 function Friends(props) {
   useEffect(() => {
     axios
-      .get(`http://localhost:3000/people/personbyid/${localStorage.id}`)
+      .get(`/people/personbyid/${localStorage.id}`)
       .then((request) => {
         return request.data;
       })
@@ -19,7 +19,7 @@ function Friends(props) {
         newData.me !== localStorage.id
       ) {
         axios
-          .get(`http://localhost:3000/people/personbyid/${localStorage.id}`)
+          .get(`/people/personbyid/${localStorage.id}`)
           .then((request) => {
             return request.data;
           })
@@ -39,9 +39,7 @@ function Friends(props) {
       id: e.target.className,
     });
     axios
-      .get(
-        `http://localhost:3000/chat/${e.target.className}/${localStorage.id}`
-      )
+      .get(`/chat/${e.target.className}/${localStorage.id}`)
       .then((request) => {
         return request.data;
       })
@@ -53,7 +51,7 @@ function Friends(props) {
   const handleClickRemoveFriend = async (e) => {
     e.preventDefault();
     const friend = await axios
-      .get(`http://localhost:3000/people/personbyid/${e.target.className}`)
+      .get(`/people/personbyid/${e.target.className}`)
       .then((request) => {
         return request.data;
       })
@@ -61,7 +59,7 @@ function Friends(props) {
         return data[0];
       });
     const me = await axios
-      .get(`http://localhost:3000/people/personbyid/${localStorage.id}`)
+      .get(`/people/personbyid/${localStorage.id}`)
       .then((request) => {
         return request.data;
       })
@@ -76,7 +74,7 @@ function Friends(props) {
     );
     axios
       .patch(
-        `http://localhost:3000/people/${localStorage.id}/${localStorage.id}/${props.searchText}`,
+        `/people/${localStorage.id}/${localStorage.id}/${props.searchText}`,
         {
           friendList: {
             friends: [...myFriendList],
@@ -116,7 +114,7 @@ function Friends(props) {
         );
       });
     axios.patch(
-      `http://localhost:3000/people/${e.target.className}/${localStorage.id}/${props.searchText}`,
+      `/people/${e.target.className}/${localStorage.id}/${props.searchText}`,
       {
         friendList: {
           friends: [...friendFriendList],

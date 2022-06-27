@@ -43,7 +43,7 @@ function Register(props) {
     } else {
       axios
         .post(
-          `http://localhost:3000/people/person`,
+          `/people/person`,
           { email: mailInput.current.value },
           {
             headers: {

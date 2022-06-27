@@ -9,9 +9,7 @@ function SearchBar(props) {
       props.setFriendSearchText(searchInput.current.value);
       const foundFriendsCopy = [];
       axios
-        .get(
-          `http://localhost:3000/people/${localStorage.id}/${e.target.value}`
-        )
+        .get(`/people/${localStorage.id}/${e.target.value}`)
         .then((request) => {
           return request.data;
         })
