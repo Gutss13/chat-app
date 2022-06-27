@@ -1,8 +1,8 @@
-GET http://localhost:3000/chat
+GET https://chat-app-guts.herokuapp.com/chat
 
 ###
 
-GET http://localhost:3000/chat/me
+GET https://chat-app-guts.herokuapp.com/chat/me
 
 ###
 

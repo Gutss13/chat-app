@@ -15,7 +15,7 @@ var corsOptions = {
   optionsSuccessStatus: 200,
 };
 
-mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true });
+mongoose.connect(process.env.DATABASE_URI, { useNewUrlParser: true });
 const db = mongoose.connection;
 db.on('error', (error) => console.error(error));
 db.once('open', () => console.log('Connected to Database'));
@@ -32,7 +32,7 @@ app.get('*', (req, res) => {
 
 app.use('/', cors(corsOptions), chatRouter);
 
-server.listen(process.env.PORT || 3001, () => console.log('Server Started'));
+server.listen(process.env.PORT || 3000, () => console.log('Server Started'));
 
 wss.on('connection', (ws) => {
   ws.on('message', (e) => {
