@@ -24,9 +24,14 @@ app.use(express.json());
 const chatRouter = require('./routes/router');
 const wss = new WebSocket.Server({ server });
 
+app.use(express.static(path.resolve(__dirname, '../client/build')));
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
+});
+
 app.use('/', cors(corsOptions), chatRouter);
 
-server.listen(3000, () => console.log('Server Started'));
+server.listen(3001, () => console.log('Server Started'));
 
 wss.on('connection', (ws) => {
   ws.on('message', (e) => {
