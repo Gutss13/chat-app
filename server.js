@@ -18,7 +18,6 @@ var corsOptions = {
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  serverApi: ServerApiVersion.v1,
 });
 const db = mongoose.connection;
 db.on('error', (error) => console.error(error));
