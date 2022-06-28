@@ -3,9 +3,9 @@ require('dotenv').config();
 const axios = require('axios');
 const cors = require('cors');
 const express = require('express');
-const http = require('http');
+const https = require('https');
 const app = express();
-const server = http.createServer(app);
+const server = https.createServer(app);
 const mongoose = require('mongoose');
 const WebSocket = require('ws');
 const path = require('path');
@@ -40,7 +40,6 @@ server.listen(process.env.PORT || 3000, () => console.log(`Server Started`));
 wss.on('connection', (ws) => {
   ws.on('message', (e) => {
     const newData = JSON.parse(`${e}`);
-
     wss.clients.forEach((client) => {
       if ('instructions' in newData) {
         let id;
