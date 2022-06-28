@@ -13,6 +13,9 @@ body {
 .people > div:first-child > div {
   min-width: 10px;
 }
+.people > div:last-child {
+  display: flex;
+}
 .friends:hover {
   cursor: pointer;
 }
