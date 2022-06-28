@@ -1,12 +1,11 @@
-GET https://chat-app-guts.herokuapp.com/chat
-
+GET https://chat-app-guts.herokuapp.com/api/people/person/e/e
 ###
 
 GET https://chat-app-guts.herokuapp.com/chat/me
 
 ###
 
-POST  http://localhost:3000/chat
+POST  https://chat-app-guts.herokuapp.com/chat
 Content-Type: application/json
 
 {
