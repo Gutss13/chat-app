@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 function Login(props) {
   const mailInput = useRef(null);
   const passwordInput = useRef(null);
-  const [user, setUser] = useState();
+  const [user, setUser] = useState([]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
