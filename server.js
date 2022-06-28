@@ -33,13 +33,20 @@ app.get('/', (req, res) => {
   res.sendFile(path.resolve(__dirname, 'client/build', 'index.html'));
 });
 
-app.use('/api', chatRouter);
+app.use('/api', cors(corsOptions), chatRouter);
 
 server.listen(process.env.PORT || 3000, () => console.log(`Server Started`));
 
 wss.on('connection', (ws) => {
   ws.on('message', (e) => {
     const newData = JSON.parse(`${e}`);
+    if ('newPerson' in newData) {
+      axios.post('/api/people', newData.newPerson, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+    }
     wss.clients.forEach((client) => {
       if ('instructions' in newData) {
         let id;

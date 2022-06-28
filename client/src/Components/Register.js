@@ -72,35 +72,35 @@ function Register(props) {
       validationErrorCopy.mail === '' &&
       validationErrorCopy.password === ''
     ) {
-      axios
-        .post(
-          '/api/people',
-          {
+      axios.post(
+        '/api/people',
+        {
+          first_name: firstNameInput.current.value,
+          last_name: lastNameInput.current.value,
+          email: mailInput.current.value,
+          password: passwordInput.current.value,
+          id: idInput.current.value,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      ws.send(
+        JSON.stringify({
+          newPerson: {
             first_name: firstNameInput.current.value,
             last_name: lastNameInput.current.value,
             email: mailInput.current.value,
             password: passwordInput.current.value,
             id: idInput.current.value,
           },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        )
-        .then(() => {
-          ws.send(
-            JSON.stringify({
-              newPerson: {},
-              instructions: {
-                instruction: ['refreshPeople'],
-                me: localStorage.id,
-              },
-            })
-          );
-          localStorage.setItem('id', idInput.current.value);
-          props.setIsLoggedIn(true);
-        });
+          instructions: { instruction: ['refreshPeople'], me: localStorage.id },
+        })
+      );
+      localStorage.setItem('id', idInput.current.value);
+      props.setIsLoggedIn(true);
     }
   };
 
