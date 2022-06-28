@@ -9,7 +9,7 @@ function AddFriend(props) {
   const searchInput = useRef('');
   useEffect(() => {
     axios
-      .get(`/people/${localStorage.id}`)
+      .get(`/api/people/${localStorage.id}`)
       .then((request) => {
         return request.data;
       })
@@ -29,7 +29,7 @@ function AddFriend(props) {
         newData.me !== localStorage.id
       ) {
         axios
-          .get(`/people/${localStorage.id}`)
+          .get(`/api/people/${localStorage.id}`)
           .then((request) => {
             return request.data;
           })
@@ -45,7 +45,7 @@ function AddFriend(props) {
           searchInput.current.value !== null
         ) {
           axios
-            .get(`/people/${localStorage.id}/${searchInput.current.value}`)
+            .get(`/api/people/${localStorage.id}/${searchInput.current.value}`)
             .then((request) => {
               return request.data;
             })
@@ -65,7 +65,7 @@ function AddFriend(props) {
     if (e.target.value !== '') {
       props.setSearchText(searchInput.current.value);
       axios
-        .get(`/people/${localStorage.id}/${e.target.value}`)
+        .get(`/api/people/${localStorage.id}/${e.target.value}`)
         .then((request) => {
           return request.data;
         })
@@ -85,7 +85,7 @@ function AddFriend(props) {
   const handleClickAddFriend = async (e) => {
     e.preventDefault();
     const person_receiver = await axios
-      .get(`/people/personbyid/${e.target.className}`)
+      .get(`/api/people/personbyid/${e.target.className}`)
       .then((request) => {
         return request.data;
       })
@@ -93,7 +93,7 @@ function AddFriend(props) {
         return data[0];
       });
     const person_sender = await axios
-      .get(`/people/personbyid/${localStorage.id}`)
+      .get(`/api/people/personbyid/${localStorage.id}`)
       .then((request) => {
         return request.data;
       })
@@ -103,7 +103,7 @@ function AddFriend(props) {
 
     axios
       .patch(
-        `/people/${localStorage.id}/${localStorage.id}/${props.searchText}`,
+        `/api/people/${localStorage.id}/${localStorage.id}/${props.searchText}`,
         {
           friendList: {
             ...person_sender.friendList,
@@ -134,7 +134,7 @@ function AddFriend(props) {
       });
     axios
       .patch(
-        `/people/${e.target.className}/${localStorage.id}/${props.searchText}`,
+        `/api/people/${e.target.className}/${localStorage.id}/${props.searchText}`,
         {
           friendList: {
             ...person_receiver.friendList,
@@ -175,7 +175,7 @@ function AddFriend(props) {
   const handleClickRemoveFriend = async (e) => {
     e.preventDefault();
     const friend = await axios
-      .get(`/people/personbyid/${e.target.className}`)
+      .get(`/api/people/personbyid/${e.target.className}`)
       .then((request) => {
         return request.data;
       })
@@ -183,7 +183,7 @@ function AddFriend(props) {
         return data[0];
       });
     const me = await axios
-      .get(`/people/personbyid/${localStorage.id}`)
+      .get(`/api/people/personbyid/${localStorage.id}`)
       .then((request) => {
         return request.data;
       })
@@ -200,7 +200,7 @@ function AddFriend(props) {
 
     axios
       .patch(
-        `/people/${localStorage.id}/${localStorage.id}/${props.searchText}`,
+        `/api/people/${localStorage.id}/${localStorage.id}/${props.searchText}`,
         {
           friendList: {
             friends: [...meFriendList],
@@ -225,7 +225,7 @@ function AddFriend(props) {
       });
     axios
       .patch(
-        `/people/${e.target.className}/${localStorage.id}/${props.searchText}`,
+        `/api/people/${e.target.className}/${localStorage.id}/${props.searchText}`,
         {
           friendList: {
             friends: [...friendFriendList],
@@ -272,7 +272,7 @@ function AddFriend(props) {
   const acceptFriendRequest = async (e) => {
     e.preventDefault();
     const friend = await axios
-      .get(`/people/personbyid/${e.target.className}`)
+      .get(`/api/people/personbyid/${e.target.className}`)
       .then((request) => {
         return request.data;
       })
@@ -280,7 +280,7 @@ function AddFriend(props) {
         return data[0];
       });
     const me = await axios
-      .get(`/people/personbyid/${localStorage.id}`)
+      .get(`/api/people/personbyid/${localStorage.id}`)
       .then((request) => {
         return request.data;
       })
@@ -298,7 +298,7 @@ function AddFriend(props) {
     props.setFriends([...me.friendList.friends, e.target.className]);
     axios
       .patch(
-        `/people/${localStorage.id}/${localStorage.id}/${props.searchText}`,
+        `/api/people/${localStorage.id}/${localStorage.id}/${props.searchText}`,
         {
           friendList: {
             friends: [...me.friendList.friends, e.target.className],
@@ -323,7 +323,7 @@ function AddFriend(props) {
       });
     axios
       .patch(
-        `/people/${e.target.className}/${localStorage.id}/${props.searchText}`,
+        `/api/people/${e.target.className}/${localStorage.id}/${props.searchText}`,
         {
           friendList: {
             friends: [...friend.friendList.friends, localStorage.id],
@@ -362,7 +362,7 @@ function AddFriend(props) {
   const rejectFriendRequest = async (e) => {
     e.preventDefault();
     const friend = await axios
-      .get(`/people/personbyid/${e.target.className}`)
+      .get(`/api/people/personbyid/${e.target.className}`)
       .then((request) => {
         return request.data;
       })
@@ -370,7 +370,7 @@ function AddFriend(props) {
         return data[0];
       });
     const me = await axios
-      .get(`/people/personbyid/${localStorage.id}`)
+      .get(`/api/people/personbyid/${localStorage.id}`)
       .then((request) => {
         return request.data;
       })
@@ -387,7 +387,7 @@ function AddFriend(props) {
     delete friend.friendList.requests.sent[sentKeyName];
     axios
       .patch(
-        `/people/${localStorage.id}/${localStorage.id}/${props.searchText}`,
+        `/api/people/${localStorage.id}/${localStorage.id}/${props.searchText}`,
         {
           friendList: {
             ...me.friendList,
@@ -412,7 +412,7 @@ function AddFriend(props) {
       });
     axios
       .patch(
-        `/people/${e.target.className}/${localStorage.id}/${props.searchText}`,
+        `/api/people/${e.target.className}/${localStorage.id}/${props.searchText}`,
         {
           friendList: {
             ...friend.friendList,
@@ -451,7 +451,7 @@ function AddFriend(props) {
   const handleClickCancelRequest = async (e) => {
     e.preventDefault();
     const friend = await axios
-      .get(`/people/personbyid/${e.target.className}`)
+      .get(`/api/people/personbyid/${e.target.className}`)
       .then((request) => {
         return request.data;
       })
@@ -459,7 +459,7 @@ function AddFriend(props) {
         return data[0];
       });
     const me = await axios
-      .get(`/people/personbyid/${localStorage.id}`)
+      .get(`/api/people/personbyid/${localStorage.id}`)
       .then((request) => {
         return request.data;
       })
@@ -476,7 +476,7 @@ function AddFriend(props) {
     delete friend.friendList.requests.incoming[sentKeyName];
     axios
       .patch(
-        `/people/${localStorage.id}/${localStorage.id}/${props.searchText}`,
+        `/api/people/${localStorage.id}/${localStorage.id}/${props.searchText}`,
         {
           friendList: {
             ...me.friendList,
@@ -501,7 +501,7 @@ function AddFriend(props) {
       });
     axios
       .patch(
-        `/people/${e.target.className}/${localStorage.id}/${props.searchText}`,
+        `/api/people/${e.target.className}/${localStorage.id}/${props.searchText}`,
         {
           friendList: {
             ...friend.friendList,

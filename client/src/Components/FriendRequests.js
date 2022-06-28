@@ -7,7 +7,7 @@ function FriendRequests(props) {
 
   useEffect(() => {
     axios
-      .get(`/people/personbyid/${localStorage.id}`)
+      .get(`/api/people/personbyid/${localStorage.id}`)
       .then((request) => {
         return request.data;
       })
@@ -18,7 +18,7 @@ function FriendRequests(props) {
             Object.keys(data[0].friendList.requests.incoming).forEach((key) => {
               axios
                 .get(
-                  `/people/personbyid/${data[0].friendList.requests.incoming[key]}`
+                  `/api/people/personbyid/${data[0].friendList.requests.incoming[key]}`
                 )
                 .then((request) => {
                   return request.data;
@@ -40,7 +40,7 @@ function FriendRequests(props) {
         newData.me !== localStorage.id
       ) {
         axios
-          .get(`/people/personbyid/${localStorage.id}`)
+          .get(`/api/people/personbyid/${localStorage.id}`)
           .then((request) => {
             return request.data;
           })
@@ -54,7 +54,7 @@ function FriendRequests(props) {
                   (key) => {
                     axios
                       .get(
-                        `/people/personbyid/${data[0].friendList.requests.incoming[key]}`
+                        `/api/people/personbyid/${data[0].friendList.requests.incoming[key]}`
                       )
                       .then((request) => {
                         return request.data;
@@ -77,7 +77,7 @@ function FriendRequests(props) {
   const acceptFriendRequest = async (e) => {
     e.preventDefault();
     const friend = await axios
-      .get(`/people/personbyid/${e.target.className}`)
+      .get(`/api/people/personbyid/${e.target.className}`)
       .then((request) => {
         return request.data;
       })
@@ -85,7 +85,7 @@ function FriendRequests(props) {
         return data[0];
       });
     const me = await axios
-      .get(`/people/personbyid/${localStorage.id}`)
+      .get(`/api/people/personbyid/${localStorage.id}`)
       .then((request) => {
         return request.data;
       })
@@ -103,7 +103,7 @@ function FriendRequests(props) {
     props.setFriends([...me.friendList.friends, e.target.className]);
     axios
       .patch(
-        `/people/${localStorage.id}/${localStorage.id}/${props.searchText}`,
+        `/api/people/${localStorage.id}/${localStorage.id}/${props.searchText}`,
         {
           friendList: {
             friends: [...me.friendList.friends, e.target.className],
@@ -129,7 +129,7 @@ function FriendRequests(props) {
 
     axios
       .patch(
-        `/people/${e.target.className}/${localStorage.id}/${props.searchText}`,
+        `/api/people/${e.target.className}/${localStorage.id}/${props.searchText}`,
         {
           friendList: {
             friends: [...friend.friendList.friends, localStorage.id],
@@ -168,7 +168,7 @@ function FriendRequests(props) {
   const rejectFriendRequest = async (e) => {
     e.preventDefault();
     const friend = await axios
-      .get(`/people/personbyid/${e.target.className}`)
+      .get(`/api/people/personbyid/${e.target.className}`)
       .then((request) => {
         return request.data;
       })
@@ -176,7 +176,7 @@ function FriendRequests(props) {
         return data[0];
       });
     const me = await axios
-      .get(`/people/personbyid/${localStorage.id}`)
+      .get(`/api/people/personbyid/${localStorage.id}`)
       .then((request) => {
         return request.data;
       })
@@ -193,7 +193,7 @@ function FriendRequests(props) {
     delete friend.friendList.requests.sent[sentKeyName];
     axios
       .patch(
-        `/people/${localStorage.id}/${localStorage.id}/${props.searchText}`,
+        `/api/people/${localStorage.id}/${localStorage.id}/${props.searchText}`,
         {
           friendList: {
             ...me.friendList,
@@ -218,7 +218,7 @@ function FriendRequests(props) {
       });
     axios
       .patch(
-        `/people/${e.target.className}/${localStorage.id}/${props.searchText}`,
+        `/api/people/${e.target.className}/${localStorage.id}/${props.searchText}`,
         {
           friendList: {
             ...friend.friendList,

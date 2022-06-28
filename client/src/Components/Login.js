@@ -11,7 +11,7 @@ function Login(props) {
     if (mailInput.current.value && passwordInput.current.value) {
       axios
         .get(
-          `/people/person/${mailInput.current.value}/${passwordInput.current.value}`
+          `/api/people/person/${mailInput.current.value}/${passwordInput.current.value}`
         )
         .then((request) => {
           return request.data;

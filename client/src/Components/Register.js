@@ -43,7 +43,7 @@ function Register(props) {
     } else {
       axios
         .post(
-          `/people/person`,
+          `/api/people/person`,
           { email: mailInput.current.value },
           {
             headers: {

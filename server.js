@@ -29,11 +29,11 @@ const chatRouter = require('./routes/router');
 const wss = new WebSocket.Server({ server });
 
 app.use(express.static(path.resolve(__dirname, 'client/build')));
-app.get('*', (req, res) => {
+app.get('/', (req, res) => {
   res.sendFile(path.resolve(__dirname, 'client/build', 'index.html'));
 });
 
-app.use('/', cors(corsOptions), chatRouter);
+app.use('/api', cors(corsOptions), chatRouter);
 
 server.listen(process.env.PORT || 3000, () => console.log('Server Started'));
 
@@ -41,7 +41,7 @@ wss.on('connection', (ws) => {
   ws.on('message', (e) => {
     const newData = JSON.parse(`${e}`);
     if ('newPerson' in newData) {
-      axios.post('/people', newData.newPerson, {
+      axios.post('/api/people', newData.newPerson, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -58,7 +58,7 @@ wss.on('connection', (ws) => {
           });
           if (id) {
             axios.patch(
-              `/people/${id}/${id}/${searchText}`,
+              `/api/people/${id}/${id}/${searchText}`,
               {
                 isOnline: false,
               },

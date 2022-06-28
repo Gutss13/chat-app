@@ -29,7 +29,7 @@ function Main(props) {
       const friendsInfoCopy = [];
       friends.forEach((friend) => {
         axios
-          .get(`/people/personbyid/${friend}`)
+          .get(`/api/people/personbyid/${friend}`)
           .then((request) => {
             return request.data;
           })
@@ -48,7 +48,7 @@ function Main(props) {
 
   useEffect(() => {
     axios
-      .get(`/people/personbyid/${localStorage.id}`)
+      .get(`/api/people/personbyid/${localStorage.id}`)
       .then((request) => {
         return request.data;
       })
@@ -59,7 +59,7 @@ function Main(props) {
 
     axios
       .patch(
-        `/people/${localStorage.id}/${localStorage.id}/${searchText}`,
+        `/api/people/${localStorage.id}/${localStorage.id}/${searchText}`,
         {
           isOnline: true,
         },
@@ -117,7 +117,7 @@ function Main(props) {
       }
     });
     axios
-      .get(`/people/personbyid/${localStorage.id}`)
+      .get(`/api/people/personbyid/${localStorage.id}`)
       .then((request) => {
         return request.data;
       })
@@ -129,7 +129,7 @@ function Main(props) {
       const newData = JSON.parse(e.data);
       if (newData.instruction === 'refreshChat' && receiver) {
         axios
-          .get(`/chat/${receiver.id}/${localStorage.id}`)
+          .get(`/api/chat/${receiver.id}/${localStorage.id}`)
           .then((request) => {
             return request.data;
           })
@@ -144,7 +144,7 @@ function Main(props) {
     e.preventDefault();
     axios
       .post(
-        '/chat',
+        '/api/chat',
         {
           chatData: e.target.parentNode.previousSibling.lastChild.value,
           sender_id: localStorage.id,
@@ -193,7 +193,7 @@ function Main(props) {
               e.preventDefault();
               axios
                 .patch(
-                  `/people/${localStorage.id}/${localStorage.id}/${searchText}`,
+                  `/api/people/${localStorage.id}/${localStorage.id}/${searchText}`,
                   {
                     isOnline: false,
                   },
