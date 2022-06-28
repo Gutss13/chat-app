@@ -87,33 +87,26 @@ function Register(props) {
           },
         }
       );
-      axios
-        .post(
-          '/api/people',
-          {
-            first_name: firstNameInput.current.value,
-            last_name: lastNameInput.current.value,
-            email: mailInput.current.value,
-            password: passwordInput.current.value,
-            id: idInput.current.value,
+      axios.post(
+        '/api/people',
+        {
+          first_name: firstNameInput.current.value,
+          last_name: lastNameInput.current.value,
+          email: mailInput.current.value,
+          password: passwordInput.current.value,
+          id: idInput.current.value,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
           },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        )
-        .then(() => {
-          ws.send(
-            JSON.stringify({
-              instructions: {
-                instruction: ['refreshPeople'],
-                me: localStorage.id,
-              },
-            })
-          );
-        });
-
+        }
+      );
+      ws.send(
+        JSON.stringify({
+          instructions: { instruction: ['refreshPeople'], me: localStorage.id },
+        })
+      );
       localStorage.setItem('id', idInput.current.value);
       props.setIsLoggedIn(true);
     }
