@@ -48,6 +48,7 @@ wss.on('connection', (ws) => {
               JSON.stringify({
                 isTyping: newData.instructions[0].isTyping,
                 isTypingTarget: newData.instructions[0].isTypingTarget,
+                msgSender: newData.instructions[0].msgSender,
               })
             );
           }
@@ -56,6 +57,7 @@ wss.on('connection', (ws) => {
               JSON.stringify({
                 isSeen: newData.instructions[0].isSeen,
                 isSeenTarget: newData.instructions[0].isSeenTarget,
+                msgSender: newData.instructions[0].msgSender,
               })
             );
           }

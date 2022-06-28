@@ -97,33 +97,6 @@ function Main(props) {
 
     window.addEventListener('beforeunload', updateStatus);
 
-    const updateChatStatus = (e) => {
-      const newData = JSON.parse(e.data);
-      if (
-        newData.instruction === 'removeReceiver' &&
-        newData.me === localStorage.id
-      ) {
-        setReceiver(null);
-      }
-      if (
-        newData.instruction !== 'refreshPeople' &&
-        newData.instruction !== 'refreshRequests' &&
-        newData.instruction !== 'refreshChat' &&
-        newData.instruction !== 'refreshFriends'
-      ) {
-        if (
-          newData.isTypingTarget &&
-          newData.isTypingTarget === localStorage.id
-        ) {
-          setIsFriendTyping(newData.isTyping);
-        }
-        if (newData.isSeenTarget && newData.isSeenTarget === localStorage.id) {
-          setIsSeen(newData.isSeen);
-        }
-      }
-    };
-    ws.addEventListener('message', updateChatStatus);
-
     axios
       .get(`/api/people/personbyid/${localStorage.id}`)
       .then((request) => {
@@ -132,7 +105,6 @@ function Main(props) {
       .then((data) => setCurrUser(data[0]));
 
     return () => {
-      ws.removeEventListener('message', updateChatStatus);
       window.removeEventListener('beforeunload', updateStatus);
     };
   }, []);
@@ -141,7 +113,6 @@ function Main(props) {
     const updateChat = (e) => {
       const newData = JSON.parse(e.data);
       if (receiver) {
-        console.log(newData.instruction);
         if (
           newData.instruction === 'refreshChat' &&
           newData.msgSender === receiver.id
@@ -157,10 +128,45 @@ function Main(props) {
         }
       }
     };
-
+    const updateChatStatus = (e) => {
+      const newData = JSON.parse(e.data);
+      if (
+        newData.instruction === 'removeReceiver' &&
+        newData.me === localStorage.id
+      ) {
+        setReceiver(null);
+      }
+      if (
+        newData.instruction !== 'refreshPeople' &&
+        newData.instruction !== 'refreshRequests' &&
+        newData.instruction !== 'refreshChat' &&
+        newData.instruction !== 'refreshFriends'
+      ) {
+        if (receiver) {
+          if (
+            newData.isTypingTarget &&
+            newData.isTypingTarget === localStorage.id &&
+            newData.msgSender === receiver.id
+          ) {
+            setIsFriendTyping(newData.isTyping);
+          }
+          if (
+            newData.isSeenTarget &&
+            newData.isSeenTarget === localStorage.id &&
+            newData.msgSender === receiver.id
+          ) {
+            setIsSeen(newData.isSeen);
+          }
+        }
+      }
+    };
+    ws.addEventListener('message', updateChatStatus);
     ws.addEventListener('message', updateChat);
 
-    return () => ws.removeEventListener('message', updateChat);
+    return () => {
+      ws.removeEventListener('message', updateChat);
+      ws.removeEventListener('message', updateChatStatus);
+    };
   }, [receiver]);
 
   const handleSendClick = () => {
@@ -200,6 +206,7 @@ function Main(props) {
             {
               isSeen: false,
               isSeenTarget: chat[0].sender_id,
+              msgSender: localStorage.id,
             },
           ],
         })
@@ -227,7 +234,13 @@ function Main(props) {
     if (isTyping !== null) {
       ws.send(
         JSON.stringify({
-          instructions: [{ isTyping: isTyping, isTypingTarget: receiver.id }],
+          instructions: [
+            {
+              isTyping: isTyping,
+              isTypingTarget: receiver.id,
+              msgSender: localStorage.id,
+            },
+          ],
         })
       );
     }
@@ -347,6 +360,7 @@ function Main(props) {
                             {
                               isSeen: true,
                               isSeenTarget: chat[0].sender_id,
+                              msgSender: localStorage.id,
                             },
                           ],
                         })
