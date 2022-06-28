@@ -35,9 +35,7 @@ app.get('*', (req, res) => {
 
 app.use('/api', cors(corsOptions), chatRouter);
 
-server.listen(process.env.PORT || 3000, () =>
-  console.log(`Server Started on port ${process.env.PORT}`)
-);
+server.listen(process.env.PORT || 3000, () => console.log(`Server Started`));
 
 wss.on('connection', (ws) => {
   ws.on('message', (e) => {
