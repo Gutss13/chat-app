@@ -92,6 +92,12 @@ function Main(props) {
     });
 
     ws.addEventListener('message', (e) => {
+      axios
+        .get(`/api/people/personbyid/${localStorage.id}`)
+        .then((request) => {
+          return request.data;
+        })
+        .then((data) => setCurrUser(data[0]));
       const newData = JSON.parse(e.data);
       if (
         newData.instruction === 'removeReceiver' &&
@@ -116,12 +122,6 @@ function Main(props) {
         }
       }
     });
-    axios
-      .get(`/api/people/personbyid/${localStorage.id}`)
-      .then((request) => {
-        return request.data;
-      })
-      .then((data) => setCurrUser(data[0]));
   }, []);
 
   useEffect(() => {
