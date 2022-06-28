@@ -80,18 +80,24 @@ function Main(props) {
         );
       });
 
-    window.addEventListener('beforeunload', () => {
+    const updateStatus = () => {
       ws.send(
         JSON.stringify({
           instructions: {
             instruction: ['refreshFriends', 'refreshPeople'],
-            searchText: { id: localStorage.id, searchText: searchText },
+            searchText: {
+              id: localStorage.id,
+              searchText,
+              url: window.location.origin,
+            },
           },
         })
       );
-    });
+    };
 
-    ws.addEventListener('message', (e) => {
+    window.addEventListener('beforeunload', updateStatus);
+
+    const updateChatStatus = (e) => {
       const newData = JSON.parse(e.data);
       if (
         newData.instruction === 'removeReceiver' &&
@@ -115,38 +121,54 @@ function Main(props) {
           setIsSeen(newData.isSeen);
         }
       }
-    });
+    };
+    ws.addEventListener('message', updateChatStatus);
+
     axios
       .get(`/api/people/personbyid/${localStorage.id}`)
       .then((request) => {
         return request.data;
       })
       .then((data) => setCurrUser(data[0]));
+
+    return () => {
+      ws.removeEventListener('message', updateChatStatus);
+      window.removeEventListener('beforeunload', updateStatus);
+    };
   }, []);
 
   useEffect(() => {
-    ws.addEventListener('message', (e) => {
+    const updateChat = (e) => {
       const newData = JSON.parse(e.data);
-      if (newData.instruction === 'refreshChat' && receiver) {
-        axios
-          .get(`/api/chat/${receiver.id}/${localStorage.id}`)
-          .then((request) => {
-            return request.data;
-          })
-          .then((data) => {
-            setChat([...data]);
-          });
+      if (receiver) {
+        console.log(newData.instruction);
+        if (
+          newData.instruction === 'refreshChat' &&
+          newData.msgSender === receiver.id
+        ) {
+          axios
+            .get(`/api/chat/${receiver.id}/${localStorage.id}`)
+            .then((request) => {
+              return request.data;
+            })
+            .then((data) => {
+              setChat(data);
+            });
+        }
       }
-    });
+    };
+
+    ws.addEventListener('message', updateChat);
+
+    return () => ws.removeEventListener('message', updateChat);
   }, [receiver]);
 
-  const handleSendClick = (e) => {
-    e.preventDefault();
+  const handleSendClick = () => {
     axios
       .post(
         '/api/chat',
         {
-          chatData: e.target.parentNode.previousSibling.lastChild.value,
+          chatData: textInput.current.value.trim(),
           sender_id: localStorage.id,
           receiver_id: receiver.id,
         },
@@ -159,10 +181,37 @@ function Main(props) {
       .then(() => {
         ws.send(
           JSON.stringify({
-            instructions: { instruction: ['refreshChat'] },
+            instructions: {
+              instruction: ['refreshChat'],
+              msgSender: localStorage.id,
+            },
           })
         );
-        e.target.parentNode.previousSibling.lastChild.value = '';
+      });
+    if (textInput.current.value) {
+      textInput.current.value = '';
+    }
+    setIsTyping(false);
+    if (textInput.current.value && chat) {
+      setIsSeen(false);
+      ws.send(
+        JSON.stringify({
+          instructions: [
+            {
+              isSeen: false,
+              isSeenTarget: chat[0].sender_id,
+            },
+          ],
+        })
+      );
+    }
+    axios
+      .get(`/api/chat/${receiver.id}/${localStorage.id}`)
+      .then((request) => {
+        return request.data;
+      })
+      .then((data) => {
+        setChat(data);
       });
   };
 
@@ -246,7 +295,6 @@ function Main(props) {
               friendsInfo={friendsInfo}
               friendSearchText={friendSearchText}
               setFriendSearchText={setFriendSearchText}
-              setIsSeen={setIsSeen}
             />
             <Friends
               friendsInfo={friendsInfo}
@@ -269,8 +317,10 @@ function Main(props) {
       <div className="chatDiv">
         <div>{receiver && `To: ${receiver.name}`}</div>
         <div className="chat">
-          <div className="isTyping">{isFriendTyping ? 'Typing...' : null}</div>
-          <div className="isSeen">{isSeen ? 'Seen' : null}</div>
+          <div className="isTyping">
+            {isFriendTyping && receiver ? 'Typing...' : null}
+          </div>
+          <div className="isSeen">{isSeen && receiver ? 'Seen' : null}</div>
 
           {chat && receiver ? (
             <Chat chat={chat} />
@@ -283,12 +333,14 @@ function Main(props) {
             <div className="sendTextDiv">
               <div>
                 <textarea
+                  autoFocus
                   rows="5"
+                  id="textareaId"
                   onChange={(e) => {
                     handleChangeTyping(e);
                   }}
                   onFocus={() => {
-                    if (chat[0] && chat[0].sender_id !== localStorage.id) {
+                    if (chat && chat[0].sender_id !== localStorage.id) {
                       ws.send(
                         JSON.stringify({
                           instructions: [
@@ -301,6 +353,18 @@ function Main(props) {
                       );
                     }
                   }}
+                  onKeyDown={(e) => {
+                    if (receiver) {
+                      if (
+                        document.activeElement ===
+                          document.getElementById('textareaId') &&
+                        e.key === 'Enter'
+                      ) {
+                        e.preventDefault();
+                        handleSendClick();
+                      }
+                    }
+                  }}
                   ref={textInput}
                 ></textarea>
               </div>
@@ -308,11 +372,8 @@ function Main(props) {
                 <button
                   type="button"
                   onClick={(e) => {
-                    handleSendClick(e);
-                    setIsTyping(false);
-                    if (isSeen) {
-                      setIsSeen(false);
-                    }
+                    e.preventDefault();
+                    handleSendClick();
                   }}
                 >
                   Send

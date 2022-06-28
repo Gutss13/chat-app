@@ -42,26 +42,7 @@ wss.on('connection', (ws) => {
     const newData = JSON.parse(`${e}`);
     wss.clients.forEach((client) => {
       if ('instructions' in newData) {
-        let id;
-        let searchText;
         if (Array.isArray(newData.instructions)) {
-          newData.instructions.forEach((element) => {
-            if (element.id) id = element.id;
-            if (element.searchText) searchText = element.searchText;
-          });
-          if (id) {
-            axios.patch(
-              `/api/people/${id}/${id}/${searchText}`,
-              {
-                isOnline: false,
-              },
-              {
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-              }
-            );
-          }
           if (newData.instructions[0].isTypingTarget) {
             client.send(
               JSON.stringify({
@@ -79,6 +60,24 @@ wss.on('connection', (ws) => {
             );
           }
         }
+        if (newData.instructions.searchText) {
+          const id = newData.instructions.searchText.id;
+          const searchText = newData.instructions.searchText.searchText;
+          const url = newData.instructions.searchText.url;
+          if (id) {
+            axios.patch(
+              `${url}/api/people/${id}/${id}/${searchText}`,
+              {
+                isOnline: false,
+              },
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
+          }
+        }
         if (newData.instructions.instruction) {
           if (newData.instructions.instruction.includes('refreshFriends')) {
             client.send(
@@ -92,6 +91,7 @@ wss.on('connection', (ws) => {
             client.send(
               JSON.stringify({
                 instruction: 'refreshChat',
+                msgSender: newData.instructions.msgSender,
               })
             );
           }

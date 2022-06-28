@@ -33,7 +33,7 @@ function FriendRequests(props) {
           }
         }
       });
-    ws.addEventListener('message', (e) => {
+    const updateRequests = (e) => {
       const newData = JSON.parse(e.data);
       if (
         newData.instruction === 'refreshRequests' &&
@@ -71,7 +71,9 @@ function FriendRequests(props) {
             }
           });
       }
-    });
+    };
+    ws.addEventListener('message', (e) => updateRequests);
+    return () => ws.removeEventListener('message', (e) => updateRequests);
   }, []);
 
   const acceptFriendRequest = async (e) => {

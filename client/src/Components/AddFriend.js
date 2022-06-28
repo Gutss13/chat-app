@@ -21,7 +21,7 @@ function AddFriend(props) {
         );
       });
 
-    ws.addEventListener('message', (e) => {
+    const updatePeople = (e) => {
       const newData = JSON.parse(e.data);
       if (
         (newData.instruction === 'refreshPeople' ||
@@ -58,7 +58,9 @@ function AddFriend(props) {
             });
         }
       }
-    });
+    };
+    ws.addEventListener('message', updatePeople);
+    return () => ws.removeEventListener('message', updatePeople);
   }, []);
 
   const handleChange = (e) => {

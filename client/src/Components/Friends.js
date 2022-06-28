@@ -12,7 +12,7 @@ function Friends(props) {
       .then((data) => {
         if (data[0]) props.setFriends([...data[0].friendList.friends]);
       });
-    ws.addEventListener('message', (e) => {
+    const updateFriends = (e) => {
       const newData = JSON.parse(e.data);
       if (
         newData.instruction === 'refreshFriends' &&
@@ -29,15 +29,13 @@ function Friends(props) {
             }
           });
       }
-    });
+    };
+    ws.addEventListener('message', updateFriends);
+    return () => ws.removeEventListener('message', updateFriends);
   }, []);
 
   const handleClick = (e) => {
     e.preventDefault();
-    props.setReceiver({
-      name: e.target.textContent,
-      id: e.target.className,
-    });
     axios
       .get(`/api/chat/${e.target.className}/${localStorage.id}`)
       .then((request) => {
@@ -45,6 +43,11 @@ function Friends(props) {
       })
       .then((data) => {
         props.setChat([...data]);
+        props.setReceiver({
+          ...props.receiver,
+          name: e.target.textContent,
+          id: e.target.className,
+        });
       });
   };
 
@@ -140,6 +143,16 @@ function Friends(props) {
       );
     }
     props.setIsSeen(false);
+    ws.send(
+      JSON.stringify({
+        instructions: [
+          {
+            isSeen: true,
+            isSeenTarget: localStorage.id,
+          },
+        ],
+      })
+    );
   };
 
   return (
