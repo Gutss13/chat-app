@@ -89,7 +89,6 @@ function Register(props) {
           }
         )
         .then(() => {
-          console.log('test');
           ws.send(
             JSON.stringify({
               newPerson: {},

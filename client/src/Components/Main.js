@@ -220,10 +220,7 @@ function Main(props) {
             Log Out
           </button>
           <span className="loggedIn">Logged in: </span>
-          <span className="currUser">
-            {console.log(currUser)}
-            {currUser && currUser.full_name}
-          </span>
+          <span className="currUser">{currUser && currUser.full_name}</span>
         </div>
         <div className="peopleDiv">
           <div className="addFriendDiv">
