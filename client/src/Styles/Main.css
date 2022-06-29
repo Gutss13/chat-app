@@ -113,7 +113,7 @@ body {
   background-color: darkgray;
   border-radius: 5px;
   height: 100%;
-  overflow: scroll;
+  overflow: auto;
   display: flex;
   flex-direction: column-reverse;
 }
@@ -178,11 +178,11 @@ textarea {
 }
 .friendsContainer {
   max-height: 35vh;
-  overflow: scroll;
+  overflow: auto;
 }
 .peopleContainer {
   max-height: 35vh;
-  overflow: scroll;
+  overflow: auto;
 }
 .sendTextDiv > div:last-child > button {
   width: 100%;
