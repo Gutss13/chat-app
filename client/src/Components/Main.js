@@ -220,7 +220,7 @@ function Main(props) {
         date: new Date().toJSON(),
       });
       chatCopy.sort((a, b) => {
-        return new Date(b.date) > new Date(a.date);
+        return new Date(b.date).getTime() > new Date(a.date).getTime();
       });
 
       setChat(chatCopy);
