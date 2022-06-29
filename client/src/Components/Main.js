@@ -178,7 +178,6 @@ function Main(props) {
             } else {
               setIsSeen(false);
             }
-            console.log(newData.isSeenVal);
           }
         }
       }
