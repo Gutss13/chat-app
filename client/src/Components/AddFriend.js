@@ -560,7 +560,8 @@ function AddFriend(props) {
         <div>
           <div className="peopleInnerDiv" style={{ marginTop: '5px' }}>
             <input
-              type="text"
+              type="search"
+              placeholder="Search People"
               className="searchBar"
               ref={searchInput}
               onChange={(e) => {

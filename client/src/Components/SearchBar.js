@@ -40,6 +40,7 @@ function SearchBar(props) {
     <div>
       <input
         type="search"
+        placeholder="Search Friends"
         style={{ marginTop: '5px' }}
         ref={searchInput}
         onChange={(e) => {

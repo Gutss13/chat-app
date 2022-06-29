@@ -123,12 +123,12 @@ function Main(props) {
               return request.data;
             })
             .then((data) => {
-              setChat(data);
+              setChat(data.sort());
             });
         }
       }
     };
-    const updateChatStatus = (e) => {
+    const updateChatStatusTyping = (e) => {
       const newData = JSON.parse(e.data);
       if (
         newData.instruction === 'removeReceiver' &&
@@ -150,76 +150,94 @@ function Main(props) {
           ) {
             setIsFriendTyping(newData.isTyping);
           }
-          if (
-            newData.isSeenTarget &&
-            newData.isSeenTarget === localStorage.id &&
-            newData.msgSender === receiver.id
-          ) {
-            setIsSeen(newData.isSeen);
-          }
         }
       }
     };
-    ws.addEventListener('message', updateChatStatus);
+    ws.addEventListener('message', updateChatStatusTyping);
     ws.addEventListener('message', updateChat);
 
     return () => {
       ws.removeEventListener('message', updateChat);
-      ws.removeEventListener('message', updateChatStatus);
+      ws.removeEventListener('message', updateChatStatusTyping);
     };
   }, [receiver]);
 
-  const handleSendClick = () => {
-    axios
-      .post(
-        '/api/chat',
-        {
-          chatData: textInput.current.value.trim(),
-          sender_id: localStorage.id,
-          receiver_id: receiver.id,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
+  useEffect(() => {
+    const updateChatStatusSeen = (e) => {
+      const newData = JSON.parse(e.data);
+      if (
+        newData.instruction !== 'refreshPeople' &&
+        newData.instruction !== 'refreshRequests' &&
+        newData.instruction !== 'refreshChat' &&
+        newData.instruction !== 'refreshFriends'
+      ) {
+        if (receiver && chat) {
+          if ('isSeenVal' in newData) {
+            if (chat[0].sender_id === localStorage.id && newData.isSeenVal) {
+              setIsSeen(newData.isSeenVal);
+            } else {
+              setIsSeen(false);
+            }
+            console.log(newData.isSeenVal);
+          }
         }
-      )
-      .then(() => {
-        ws.send(
-          JSON.stringify({
-            instructions: {
-              instruction: ['refreshChat'],
-              msgSender: localStorage.id,
-            },
-          })
-        );
-      });
+      }
+    };
+    ws.addEventListener('message', updateChatStatusSeen);
+    return () => ws.removeEventListener('message', updateChatStatusSeen);
+  }, [receiver, chat]);
+
+  const handleSendClick = () => {
     if (textInput.current.value) {
+      axios
+        .post(
+          '/api/chat',
+          {
+            chatData: textInput.current.value.trim(),
+            sender_id: localStorage.id,
+            receiver_id: receiver.id,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        )
+        .then(() => {
+          ws.send(
+            JSON.stringify({
+              instructions: {
+                instruction: ['refreshChat'],
+                msgSender: localStorage.id,
+              },
+            })
+          );
+        });
+      const chatCopy = [...chat];
+      chatCopy.push({
+        chatData: textInput.current.value.trim(),
+        sender_id: localStorage.id,
+        receiver_id: receiver.id,
+        date: new Date().toJSON(),
+      });
+      chatCopy.sort((a, b) => {
+        return new Date(b.date) > new Date(a.date);
+      });
+
+      setChat(chatCopy);
       textInput.current.value = '';
     }
     setIsTyping(false);
-    if (textInput.current.value && chat) {
-      setIsSeen(false);
-      ws.send(
-        JSON.stringify({
-          instructions: [
-            {
-              isSeen: false,
-              isSeenTarget: chat[0].sender_id,
-              msgSender: localStorage.id,
-            },
-          ],
-        })
-      );
-    }
-    axios
-      .get(`/api/chat/${receiver.id}/${localStorage.id}`)
-      .then((request) => {
-        return request.data;
+    ws.send(
+      JSON.stringify({
+        instructions: [
+          {
+            isSeenVal: false,
+            msgSender: localStorage.id,
+          },
+        ],
       })
-      .then((data) => {
-        setChat(data);
-      });
+    );
   };
 
   const handleChangeTyping = (e) => {
@@ -315,6 +333,7 @@ function Main(props) {
               receiver={receiver}
               setFriends={setFriends}
               setChat={setChat}
+              chat={chat}
               searchText={searchText}
               setFoundPeople={setFoundPeople}
               setAllPeople={setAllPeople}
@@ -353,13 +372,16 @@ function Main(props) {
                     handleChangeTyping(e);
                   }}
                   onFocus={() => {
-                    if (chat && chat[0].sender_id !== localStorage.id) {
+                    if (
+                      chat &&
+                      chat[0] &&
+                      chat[0].sender_id !== localStorage.id
+                    ) {
                       ws.send(
                         JSON.stringify({
                           instructions: [
                             {
-                              isSeen: true,
-                              isSeenTarget: chat[0].sender_id,
+                              isSeenVal: true,
                               msgSender: localStorage.id,
                             },
                           ],

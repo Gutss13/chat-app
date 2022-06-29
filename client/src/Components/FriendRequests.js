@@ -72,8 +72,8 @@ function FriendRequests(props) {
           });
       }
     };
-    ws.addEventListener('message', (e) => updateRequests);
-    return () => ws.removeEventListener('message', (e) => updateRequests);
+    ws.addEventListener('message', updateRequests);
+    return () => ws.removeEventListener('message', updateRequests);
   }, []);
 
   const acceptFriendRequest = async (e) => {

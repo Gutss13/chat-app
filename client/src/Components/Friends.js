@@ -142,13 +142,14 @@ function Friends(props) {
         })
       );
     }
-    props.setIsSeen(false);
+    // props.setIsSeen(false);
+
     ws.send(
       JSON.stringify({
         instructions: [
           {
-            isSeen: true,
-            isSeenTarget: localStorage.id,
+            isSeenVal: false,
+            msgSender: localStorage.id,
           },
         ],
       })

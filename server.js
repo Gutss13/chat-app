@@ -52,11 +52,10 @@ wss.on('connection', (ws) => {
               })
             );
           }
-          if (newData.instructions[0].isSeenTarget) {
+          if (newData.instructions[0].msgSender) {
             client.send(
               JSON.stringify({
-                isSeen: newData.instructions[0].isSeen,
-                isSeenTarget: newData.instructions[0].isSeenTarget,
+                isSeenVal: newData.instructions[0].isSeenVal,
                 msgSender: newData.instructions[0].msgSender,
               })
             );
@@ -65,6 +64,7 @@ wss.on('connection', (ws) => {
         if (newData.instructions.searchText) {
           const id = newData.instructions.searchText.id;
           const searchText = newData.instructions.searchText.searchText;
+
           const url = newData.instructions.searchText.url;
           if (id) {
             axios.patch(
