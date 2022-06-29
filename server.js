@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const axios = require('axios');
-const cors = require('cors');
+// const cors = require('cors');
 const express = require('express');
 const http = require('http');
 const app = express();
@@ -10,10 +10,10 @@ const mongoose = require('mongoose');
 const WebSocket = require('ws');
 const path = require('path');
 
-var corsOptions = {
-  origin: '*',
-  optionsSuccessStatus: 200,
-};
+// var corsOptions = {
+//   origin: '*',
+//   optionsSuccessStatus: 200,
+// };
 
 mongoose.connect(`${process.env.MONGODB_URI}`, {
   useNewUrlParser: true,
@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
   res.sendFile(path.resolve(__dirname, 'client/build', 'index.html'));
 });
 
-app.use('/api', cors(corsOptions), chatRouter);
+app.use('/api'.chatRouter);
 
 server.listen(process.env.PORT || 3000, () => console.log(`Server Started`));
 
