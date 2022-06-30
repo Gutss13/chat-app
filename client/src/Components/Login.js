@@ -65,11 +65,11 @@ function Login(props) {
           </button>
         </div>
         {userError && userError.email ? (
-          <div>{userError.email}</div>
+          <div className="validationDiv">{userError.email}</div>
         ) : userError && userError.password ? (
-          <div>{userError.password}</div>
+          <div className="validationDiv">{userError.password}</div>
         ) : userError && userError.noMatch ? (
-          <div>{userError.noMatch}</div>
+          <div className="validationDiv">{userError.noMatch}</div>
         ) : null}
       </form>
     </div>
