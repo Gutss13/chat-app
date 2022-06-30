@@ -18,6 +18,12 @@ const chatSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  id: {
+    type: String,
+    required: true,
+  },
+  isRemoved: { type: Boolean },
+  replyTo: { type: Object },
 });
 
 module.exports = mongoose.model('ChatHistory', chatSchema);

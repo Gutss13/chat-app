@@ -7,6 +7,7 @@ import SearchBar from './SearchBar';
 import Chat from './Chat';
 import AddFriend from './AddFriend';
 import Friends from './Friends';
+import { v4 as uuidv4 } from 'uuid';
 
 function Main(props) {
   const [friends, setFriends] = useState([]);
@@ -22,6 +23,7 @@ function Main(props) {
   const [friendSearchText, setFriendSearchText] = useState('');
   const [currUser, setCurrUser] = useState('');
   const [isSeen, setIsSeen] = useState(false);
+  const [replyTo, setReplyTo] = useState();
   const textInput = useRef(null);
 
   useEffect(() => {
@@ -187,43 +189,89 @@ function Main(props) {
   }, [receiver, chat]);
 
   const handleSendClick = () => {
+    const msgId = uuidv4();
     if (textInput.current.value) {
-      axios
-        .post(
-          '/api/chat',
-          {
-            chatData: textInput.current.value.trim(),
-            sender_id: localStorage.id,
-            receiver_id: receiver.id,
-          },
-          {
-            headers: {
-              'Content-Type': 'application/json',
+      if (replyTo) {
+        axios
+          .post(
+            '/api/chat',
+            {
+              chatData: textInput.current.value.trim(),
+              sender_id: localStorage.id,
+              receiver_id: receiver.id,
+              id: msgId,
+              replyTo,
             },
-          }
-        )
-        .then(() => {
-          ws.send(
-            JSON.stringify({
-              instructions: {
-                instruction: ['refreshChat'],
-                msgSender: localStorage.id,
+            {
+              headers: {
+                'Content-Type': 'application/json',
               },
-            })
-          );
+            }
+          )
+          .then(() => {
+            ws.send(
+              JSON.stringify({
+                instructions: {
+                  instruction: ['refreshChat'],
+                  msgSender: localStorage.id,
+                },
+              })
+            );
+          });
+        const chatCopy = [...chat];
+        chatCopy.push({
+          chatData: textInput.current.value.trim(),
+          sender_id: localStorage.id,
+          receiver_id: receiver.id,
+          id: msgId,
+          date: new Date().toJSON(),
+          replyTo,
         });
-      const chatCopy = [...chat];
-      chatCopy.push({
-        chatData: textInput.current.value.trim(),
-        sender_id: localStorage.id,
-        receiver_id: receiver.id,
-        date: new Date().toJSON(),
-      });
-      chatCopy.sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-      );
+        chatCopy.sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+        setReplyTo(null);
+        setChat(chatCopy);
+      } else {
+        axios
+          .post(
+            '/api/chat',
+            {
+              chatData: textInput.current.value.trim(),
+              sender_id: localStorage.id,
+              receiver_id: receiver.id,
+              id: msgId,
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          )
+          .then(() => {
+            ws.send(
+              JSON.stringify({
+                instructions: {
+                  instruction: ['refreshChat'],
+                  msgSender: localStorage.id,
+                },
+              })
+            );
+          });
+        const chatCopy = [...chat];
+        chatCopy.push({
+          chatData: textInput.current.value.trim(),
+          sender_id: localStorage.id,
+          receiver_id: receiver.id,
+          id: msgId,
+          date: new Date().toJSON(),
+        });
+        chatCopy.sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
 
-      setChat(chatCopy);
+        setChat(chatCopy);
+      }
       textInput.current.value = '';
     }
     setIsTyping(false);
@@ -348,13 +396,71 @@ function Main(props) {
       <div className="chatDiv">
         <div>{receiver && `To: ${receiver.name}`}</div>
         <div className="chat">
+          {replyTo && (
+            <div className="replyDiv">
+              <div
+                style={
+                  replyTo.sender_id === localStorage.id
+                    ? {
+                        color: 'cyan',
+                      }
+                    : {
+                        color: 'white',
+                      }
+                }
+              >
+                Reply to:
+              </div>
+              <div
+                className="chatText"
+                style={
+                  replyTo.sender_id === localStorage.id
+                    ? {
+                        backgroundColor: 'cyan',
+                        paddingRight: '20px',
+                        opacity: '0.6',
+                      }
+                    : {
+                        backgroundColor: 'white',
+                        paddingRight: '20px',
+                        opacity: '0.6',
+                      }
+                }
+              >
+                {replyTo.chatData || (replyTo.isRemoved && 'Removed')}
+                <input
+                  type="button"
+                  value="X"
+                  className="closeReply"
+                  style={
+                    replyTo.sender_id === localStorage.id
+                      ? {
+                          backgroundColor: 'white',
+                        }
+                      : {
+                          backgroundColor: 'cyan',
+                        }
+                  }
+                  onClick={() => {
+                    setReplyTo(null);
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
           <div className="isTyping">
             {isFriendTyping && receiver ? 'Typing...' : null}
           </div>
           <div className="isSeen">{isSeen && receiver ? 'Seen' : null}</div>
 
           {chat && receiver ? (
-            <Chat chat={chat} />
+            <Chat
+              chat={chat}
+              setChat={setChat}
+              receiver={receiver}
+              setReplyTo={setReplyTo}
+            />
           ) : (
             <div className="emptyChat">Click on Friend to Start Chatting</div>
           )}

@@ -4,10 +4,18 @@ import { useEffect, useRef, useState } from 'react';
 function Login(props) {
   const mailInput = useRef(null);
   const passwordInput = useRef(null);
-  const [user, setUser] = useState([]);
+  const [user, setUser] = useState();
+  const [userError, setUserError] = useState();
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!passwordInput.current.value) {
+      setUserError({ password: 'Password field is empty' });
+    }
+    if (!mailInput.current.value) {
+      setUserError({ email: 'Email field is empty' });
+    }
     if (mailInput.current.value && passwordInput.current.value) {
       axios
         .get(
@@ -23,9 +31,15 @@ function Login(props) {
   };
 
   useEffect(() => {
-    if (user && user.length > 0) {
-      localStorage.setItem('id', user[0].id);
-      props.setIsLoggedIn(true);
+    if (user) {
+      if (user.length > 0) {
+        localStorage.setItem('id', user[0].id);
+        props.setIsLoggedIn(true);
+      } else {
+        setUserError({
+          noMatch: 'Email or password is incorrect',
+        });
+      }
     }
   }, [user]);
 
@@ -50,6 +64,13 @@ function Login(props) {
             Submit
           </button>
         </div>
+        {userError && userError.email ? (
+          <div>{userError.email}</div>
+        ) : userError && userError.password ? (
+          <div>{userError.password}</div>
+        ) : userError && userError.noMatch ? (
+          <div>{userError.noMatch}</div>
+        ) : null}
       </form>
     </div>
   );

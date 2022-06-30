@@ -136,12 +136,40 @@ router.get('/chat/:receiver_id/:sender_id', async (req, res) => {
 
   res.send(chat);
 });
-
+router.patch(
+  '/chat/msg/remove/:receiver_id/:sender_id/:target_id',
+  async (req, res) => {
+    try {
+      await Chat.findOneAndUpdate({ id: req.params.target_id }, req.body);
+      const chat = await Chat.find({
+        $and: [
+          {
+            $or: [
+              { receiver_id: req.params.receiver_id },
+              { receiver_id: req.params.sender_id },
+            ],
+          },
+          {
+            $or: [
+              { sender_id: req.params.receiver_id },
+              { sender_id: req.params.sender_id },
+            ],
+          },
+        ],
+      }).sort({ date: -1 });
+      res.status(201).json(chat);
+    } catch (err) {
+      res.status(400).json({ message: err.message });
+    }
+  }
+);
 router.post('/chat', async (req, res) => {
   const chat = new Chat({
     chatData: req.body.chatData,
     sender_id: req.body.sender_id,
     receiver_id: req.body.receiver_id,
+    id: req.body.id,
+    replyTo: req.body.replyTo,
   });
   try {
     const newChat = await chat.save();
