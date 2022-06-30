@@ -143,10 +143,11 @@ function Chat(props) {
 
                 {chatVal.isRemoved ? (
                   <div
+                    className="isRemoved"
                     style={
                       chatVal.sender_id === localStorage.id
-                        ? { paddingLeft: '15px', fontStyle: 'italic' }
-                        : { paddingRight: '15pxs', fontStyle: 'italic' }
+                        ? { paddingLeft: '15px' }
+                        : { paddingRight: '15pxs' }
                     }
                   >
                     Removed
@@ -155,7 +156,11 @@ function Chat(props) {
                   <div>
                     <div>
                       <div
-                        className="chatReplyDiv"
+                        className={
+                          chatVal.replyTo.isRemoved
+                            ? 'isRemoved chatReplyDiv'
+                            : 'chatReplyDiv'
+                        }
                         style={
                           chatVal.sender_id === localStorage.id
                             ? {
@@ -170,7 +175,10 @@ function Chat(props) {
                               }
                         }
                       >
-                        Reply To: {chatVal.replyTo.chatData}
+                        Reply To:{' '}
+                        {chatVal.replyTo.isRemoved
+                          ? 'Removed'
+                          : chatVal.replyTo.chatData}
                       </div>
                     </div>
                     <div

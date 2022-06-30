@@ -141,6 +141,9 @@ router.patch(
   async (req, res) => {
     try {
       await Chat.findOneAndUpdate({ id: req.params.target_id }, req.body);
+      await Chat.find({
+        'replyTo.id': req.params.target_id,
+      }).updateMany({ 'replyTo.chatData': '', 'replyTo.isRemoved': true });
       const chat = await Chat.find({
         $and: [
           {
