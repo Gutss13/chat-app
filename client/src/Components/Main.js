@@ -133,40 +133,12 @@ function Main(props) {
         })
       );
     };
-    const updateNotifications = (e) => {
-      const newData = JSON.parse(e.data);
-      if (newData.instruction === 'refreshNotifications') {
-        if (
-          document.activeElement === textInput.current &&
-          receiver &&
-          newData.msgSender === receiver.id
-        ) {
-          axios.patch(
-            `/api/notifications/${localStorage.id}/${receiver.id}/onSeen`
-          );
-        } else {
-          axios
-            .get(`/api/people/personbyid/${localStorage.id}`)
-            .then((request) => {
-              return request.data;
-            })
-            .then((data) => {
-              if (data[0]) {
-                setFriends([...data[0].friendList.friends]);
-                setCurrUser(data[0]);
-              }
-            });
-        }
-      }
-    };
+
     window.addEventListener('beforeunload', updateStatusLogOut);
     ws.addEventListener('open', updateStatusLogIn);
-    ws.addEventListener('message', updateNotifications);
-
     return () => {
       window.removeEventListener('beforeunload', updateStatusLogOut);
       ws.removeEventListener('open', updateStatusLogIn);
-      ws.removeEventListener('message', updateNotifications);
     };
   }, []);
 
@@ -214,13 +186,40 @@ function Main(props) {
         }
       }
     };
-
+    const updateNotifications = (e) => {
+      const newData = JSON.parse(e.data);
+      if (newData.instruction === 'refreshNotifications') {
+        if (
+          document.activeElement === textInput.current &&
+          receiver &&
+          newData.msgSender === receiver.id
+        ) {
+          axios.patch(
+            `/api/notifications/${localStorage.id}/${receiver.id}/onSeen`
+          );
+        } else {
+          axios
+            .get(`/api/people/personbyid/${localStorage.id}`)
+            .then((request) => {
+              return request.data;
+            })
+            .then((data) => {
+              if (data[0]) {
+                setFriends([...data[0].friendList.friends]);
+                setCurrUser(data[0]);
+              }
+            });
+        }
+      }
+    };
     ws.addEventListener('message', updateChat);
     ws.addEventListener('message', updateChatStatusTyping);
+    ws.addEventListener('message', updateNotifications);
 
     return () => {
       ws.removeEventListener('message', updateChat);
       ws.removeEventListener('message', updateChatStatusTyping);
+      ws.removeEventListener('message', updateNotifications);
     };
   }, [receiver]);
 
