@@ -61,16 +61,15 @@ router.patch('/people/:target_id/:sender_id/:letters', async (req, res) => {
 router.get('/people/personbyid/:target_id', async (req, res) => {
   try {
     const person = await People.find({ id: req.params.target_id });
-    res.json(person);
+    res.status(201).json(person);
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
 });
 
 router.get('/people/:sender_id/:letters', async (req, res) => {
-  let people;
   try {
-    people = await People.find({
+    const people = await People.find({
       $and: [
         {
           $or: [
@@ -85,10 +84,10 @@ router.get('/people/:sender_id/:letters', async (req, res) => {
     if (people == null) {
       return res.status(404).json({ message: 'Cannot find people' });
     }
+    res.status(201).send(people);
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
-  res.send(people);
 });
 
 router.post('/people', async (req, res) => {
@@ -109,9 +108,8 @@ router.post('/people', async (req, res) => {
 });
 
 router.get('/chat/:receiver_id/:sender_id', async (req, res) => {
-  let chat;
   try {
-    chat = await Chat.find({
+    const chat = await Chat.find({
       $and: [
         {
           $or: [
@@ -130,11 +128,10 @@ router.get('/chat/:receiver_id/:sender_id', async (req, res) => {
     if (chat == null) {
       return res.status(404).json({ message: 'Cannot find chat' });
     }
+    res.status(201).send(chat);
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
-
-  res.send(chat);
 });
 router.patch(
   '/chat/msg/remove/:receiver_id/:sender_id/:target_id',
@@ -166,7 +163,69 @@ router.patch(
     }
   }
 );
-router.post('/chat', async (req, res) => {
+router.patch(
+  `/notifications/:receiver_id/:sender_id/:operation`,
+  async (req, res) => {
+    try {
+      let person = await People.find({ id: req.params.receiver_id });
+      if (req.params.operation === 'update') {
+        if (
+          person[0].notifications &&
+          Object.keys(person[0].notifications).length > 0 &&
+          Object.keys(person[0].notifications).find(
+            (e) => e === req.params.sender_id
+          )
+        ) {
+          person[0].notifications[
+            Object.keys(person[0].notifications).find(
+              (e) => e === req.params.sender_id
+            )
+          ].number += 1;
+          person[0].notifications[
+            Object.keys(person[0].notifications).find(
+              (e) => e === req.params.sender_id
+            )
+          ].date = Date.now();
+        } else {
+          person[0].notifications = {
+            ...person[0].notifications,
+            [req.params.sender_id]: { number: 1, date: Date.now() },
+          };
+        }
+      } else if (req.params.operation === 'onSeen') {
+        if (
+          person[0].notifications &&
+          Object.keys(person[0].notifications).length > 0 &&
+          Object.keys(person[0].notifications).find(
+            (e) => e === req.params.sender_id
+          )
+        ) {
+          const updatedNotifications = {};
+          Object.keys(person[0].notifications).forEach((key) => {
+            if (
+              !Object.keys(person[0].notifications).find(
+                (e) => e === req.params.sender_id
+              )
+            ) {
+              updatedNotifications[id] =
+                person[0].notifications[req.params.sender_id];
+            }
+          });
+          person[0].notifications = updatedNotifications;
+        }
+      }
+      await People.findOneAndUpdate(
+        { id: req.params.receiver_id },
+        { ...person[0] }
+      );
+      res.status(201).json();
+    } catch (err) {
+      res.status(400).json({ message: err.message });
+    }
+  }
+);
+
+router.post(`/chat`, async (req, res) => {
   const chat = new Chat({
     chatData: req.body.chatData,
     sender_id: req.body.sender_id,

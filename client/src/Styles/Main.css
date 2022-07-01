@@ -56,6 +56,10 @@ body {
   flex-direction: row;
   background-color: gray;
   height: 100vh;
+  width: 100vw;
+}
+.mainDiv > div:first-child {
+  min-width: 20%;
 }
 .peopleDiv {
   display: flex;
@@ -76,10 +80,17 @@ body {
   margin-top: 10px;
 }
 .friendsDiv {
+  width: 100%;
   margin-top: 10px;
   padding-top: 5px;
   border-top: 2px solid lightgray;
   text-align: center;
+}
+.friendsDiv > div {
+  width: 100%;
+}
+.friendsDiv > div > input {
+  width: 100%;
 }
 .people {
   text-align: left;
@@ -275,6 +286,23 @@ input[value='Add'] {
 .isRemoved {
   font-style: italic;
 }
+.notificationOuterDiv {
+  display: inline-block;
+  margin-right: 5px;
+}
+.notificationDiv {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: smaller;
+  letter-spacing: -2px;
+  min-width: 20px;
+  height: 20px;
+  color: rgba(255, 0, 0, 0.801);
+  background-color: cyan;
+  border-radius: 50px;
+}
+
 @media only screen and (max-width: 1024px) {
   .chatText {
     width: 50%;

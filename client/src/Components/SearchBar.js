@@ -16,7 +16,7 @@ function SearchBar(props) {
         .then((data) => {
           props.friendsInfo.forEach((obj1) => {
             data.forEach((obj2) => {
-              if (JSON.stringify(obj1) === JSON.stringify(obj2)) {
+              if (obj1.id === obj2.id) {
                 foundFriendsCopy.push(obj1);
                 foundFriendsCopy.sort((a, b) => {
                   return b.isOnline - a.isOnline;

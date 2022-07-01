@@ -28,20 +28,45 @@ function Main(props) {
 
   useEffect(() => {
     if (friends.length > 0) {
-      const friendsInfoCopy = [];
-      friends.forEach((friend) => {
-        axios
+      const friendsPromises = friends.map(async (friend) => {
+        let friendData = await axios
           .get(`/api/people/personbyid/${friend}`)
           .then((request) => {
             return request.data;
           })
           .then((data) => {
-            friendsInfoCopy.push(data[0]);
-            friendsInfoCopy.sort((a, b) => {
-              return b.isOnline - a.isOnline;
-            });
-            setFriendsInfo([...friendsInfoCopy]);
+            if (
+              currUser.notifications &&
+              data[0].id in currUser.notifications
+            ) {
+              return {
+                ...data[0],
+                notifications: {
+                  number: currUser.notifications[data[0].id].number,
+                  date: currUser.notifications[data[0].id].date,
+                },
+              };
+            } else {
+              return {
+                ...data[0],
+                notifications: { number: 0 },
+              };
+            }
           });
+        return friendData;
+      });
+      Promise.all(friendsPromises).then((friendsArr) => {
+        const friendsInfoCopy = friendsArr;
+        friendsInfoCopy.sort((a, b) => {
+          if (a.notifications.number !== 0 && b.notifications.number !== 0) {
+            return b.notifications.date - a.notifications.date;
+          } else if (b.notifications.number !== 0) {
+            return 1;
+          } else {
+            return b.isOnline - a.isOnline;
+          }
+        });
+        setFriendsInfo([...friendsInfoCopy]);
       });
     } else {
       setFriendsInfo([]);
@@ -55,34 +80,39 @@ function Main(props) {
         return request.data;
       })
       .then((data) => {
-        if (data && data[0]) setFriends([...data[0].friendList.friends]);
+        if (data && data[0]) {
+          setFriends([...data[0].friendList.friends]);
+          setCurrUser(data[0]);
+        }
       });
     props.setIsLoggedIn(true);
 
-    axios
-      .patch(
-        `/api/people/${localStorage.id}/${localStorage.id}/${searchText}`,
-        {
-          isOnline: true,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
+    const updateStatusLogIn = () => {
+      axios
+        .patch(
+          `/api/people/${localStorage.id}/${localStorage.id}/${searchText}`,
+          {
+            isOnline: true,
           },
-        }
-      )
-      .then(() => {
-        ws.send(
-          JSON.stringify({
-            instructions: {
-              instruction: ['refreshFriends', 'refreshPeople'],
-              me: localStorage.id,
+          {
+            headers: {
+              'Content-Type': 'application/json',
             },
-          })
+          }
+        )
+        .then(
+          ws.send(
+            JSON.stringify({
+              instructions: {
+                instruction: ['refreshFriends', 'refreshPeople'],
+                me: localStorage.id,
+              },
+            })
+          )
         );
-      });
+    };
 
-    const updateStatus = () => {
+    const updateStatusLogOut = () => {
       ws.send(
         JSON.stringify({
           instructions: {
@@ -97,8 +127,8 @@ function Main(props) {
       );
     };
 
-    window.addEventListener('beforeunload', updateStatus);
-
+    window.addEventListener('beforeunload', updateStatusLogOut);
+    ws.addEventListener('open', updateStatusLogIn);
     axios
       .get(`/api/people/personbyid/${localStorage.id}`)
       .then((request) => {
@@ -107,7 +137,8 @@ function Main(props) {
       .then((data) => setCurrUser(data[0]));
 
     return () => {
-      window.removeEventListener('beforeunload', updateStatus);
+      window.removeEventListener('beforeunload', updateStatusLogOut);
+      ws.addEventListener('open', updateStatusLogIn);
     };
   }, []);
 
@@ -155,8 +186,9 @@ function Main(props) {
         }
       }
     };
-    ws.addEventListener('message', updateChatStatusTyping);
+
     ws.addEventListener('message', updateChat);
+    ws.addEventListener('message', updateChatStatusTyping);
 
     return () => {
       ws.removeEventListener('message', updateChat);
@@ -194,7 +226,7 @@ function Main(props) {
       if (replyTo) {
         axios
           .post(
-            '/api/chat',
+            `/api/chat`,
             {
               chatData: textInput.current.value.trim(),
               sender_id: localStorage.id,
@@ -218,6 +250,20 @@ function Main(props) {
               })
             );
           });
+
+        axios
+          .patch(`/api/notifications/${receiver.id}/${localStorage.id}/update`)
+          .then(() => {
+            ws.send(
+              JSON.stringify({
+                instructions: {
+                  instruction: ['refreshFriends'],
+                  me: localStorage.id,
+                },
+              })
+            );
+          });
+
         const chatCopy = [...chat];
         chatCopy.push({
           chatData: textInput.current.value.trim(),
@@ -235,7 +281,7 @@ function Main(props) {
       } else {
         axios
           .post(
-            '/api/chat',
+            `/api/chat`,
             {
               chatData: textInput.current.value.trim(),
               sender_id: localStorage.id,
@@ -254,6 +300,18 @@ function Main(props) {
                 instructions: {
                   instruction: ['refreshChat'],
                   msgSender: localStorage.id,
+                },
+              })
+            );
+          });
+        axios
+          .patch(`/api/notifications/${receiver.id}/${localStorage.id}/update`)
+          .then(() => {
+            ws.send(
+              JSON.stringify({
+                instructions: {
+                  instruction: ['refreshFriends'],
+                  me: localStorage.id,
                 },
               })
             );
@@ -310,6 +368,18 @@ function Main(props) {
       );
     }
   }, [isTyping]);
+  const updateFriendsInfo = (id) => {
+    const friendsInfoCopy = friendsInfo.map((friend) => {
+      if (friend.id === id) {
+        const updatedFriend = friend;
+        updatedFriend.notifications = {};
+        return updatedFriend;
+      } else {
+        return friend;
+      }
+    });
+    setFriendsInfo(friendsInfoCopy);
+  };
   return (
     <div className="mainDiv">
       <div>
@@ -389,6 +459,7 @@ function Main(props) {
               friendSearchText={friendSearchText}
               setFriendSearchText={setFriendSearchText}
               setIsSeen={setIsSeen}
+              setCurrUser={setCurrUser}
             />
           </div>
         </div>
@@ -482,6 +553,10 @@ function Main(props) {
                       chat[0] &&
                       chat[0].sender_id !== localStorage.id
                     ) {
+                      axios.patch(
+                        `/api/notifications/${localStorage.id}/${receiver.id}/onSeen`
+                      );
+                      updateFriendsInfo(receiver.id);
                       ws.send(
                         JSON.stringify({
                           instructions: [

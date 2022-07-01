@@ -26,6 +26,7 @@ function Friends(props) {
           .then((data) => {
             if (data[0]) {
               props.setFriends([...data[0].friendList.friends]);
+              props.setCurrUser(data[0]);
             }
           });
       }
@@ -195,9 +196,16 @@ function Friends(props) {
                         person && person.isOnline ? 'online' : 'offline'
                       }
                     ></div>
+                    {person && person.notifications.number > 0 && (
+                      <div className="notificationOuterDiv">
+                        <div className="notificationDiv">
+                          {person.notifications.number}
+                        </div>
+                      </div>
+                    )}
                     <div
                       className={person && person.id}
-                      style={{ display: 'inline-block' }}
+                      style={{ display: 'inline' }}
                       onClick={(e) => {
                         handleClick(e);
                       }}

@@ -29,6 +29,10 @@ const personSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    notifications: {
+      type: Object,
+      default: {},
+    },
   },
   { minimize: false }
 );
