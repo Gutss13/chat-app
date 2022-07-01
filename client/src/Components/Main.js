@@ -95,6 +95,7 @@ function Main(props) {
             me: localStorage.id,
             searchText: {
               id: localStorage.id,
+              searchText,
               url: window.location.origin,
             },
           },
@@ -114,7 +115,7 @@ function Main(props) {
     if (currUser) {
       axios
         .patch(
-          `/api/people/update_status/${localStorage.id}`,
+          `/api/people/${localStorage.id}/${localStorage.id}/${searchText}`,
           {
             isOnline: true,
           },
@@ -413,7 +414,7 @@ function Main(props) {
               e.preventDefault();
               axios
                 .patch(
-                  `/api/people/update_status/${localStorage.id}`,
+                  `/api/people/${localStorage.id}/${localStorage.id}/${searchText}`,
                   {
                     isOnline: false,
                   },

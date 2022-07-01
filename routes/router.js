@@ -35,10 +35,24 @@ router.get('/people/person/:email/:password', async (req, res) => {
   }
 });
 
-router.patch('/people/update_status/:target_id', async (req, res) => {
+router.patch('/people/:target_id/:sender_id/:letters', async (req, res) => {
   try {
     await People.findOneAndUpdate({ id: req.params.target_id }, req.body);
-    res.status(201).json({});
+    const people = { allPeople: [], foundPeople: [] };
+    people.foundPeople = await People.find({
+      $and: [
+        {
+          $or: [
+            { first_name: { $regex: '^' + req.params.letters, $options: 'i' } },
+            { last_name: { $regex: '^' + req.params.letters, $options: 'i' } },
+            { full_name: { $regex: '^' + req.params.letters, $options: 'i' } },
+          ],
+        },
+        { id: { $ne: req.params.sender_id } },
+      ],
+    });
+    people.allPeople = await People.find({ id: { $ne: req.params.sender_id } });
+    res.status(201).json(people);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

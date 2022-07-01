@@ -27,11 +27,11 @@ app.use(express.json());
 
 const chatRouter = require('./routes/router');
 const wss = new WebSocket.Server({ server });
-
-app.use(express.static(path.resolve(__dirname, 'client/build')));
-app.get('/', (req, res) => {
-  res.sendFile(path.resolve(__dirname, 'client/build', 'index.html'));
-});
+// add later
+// app.use(express.static(path.resolve(__dirname, 'client/build')));
+// app.get('/', (req, res) => {
+//   res.sendFile(path.resolve(__dirname, 'client/build', 'index.html'));
+// });
 
 app.use('/api', cors(corsOptions), chatRouter);
 
@@ -63,10 +63,13 @@ wss.on('connection', (ws) => {
         }
         if (newData.instructions.searchText) {
           const id = newData.instructions.searchText.id;
-          const url = newData.instructions.searchText.url;
+          const searchText = newData.instructions.searchText.searchText;
+          // add later
+          // const url = newData.instructions.searchText.url;
           if (id) {
             axios.patch(
-              `${url}/api/people/update_status/${id}`,
+              // `${url}/api/people/${id}/${id}/${searchText}`,
+              `http://localhost:3000/api/people/${id}/${id}/${searchText}`,
               {
                 isOnline: false,
               },
