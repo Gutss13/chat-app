@@ -65,7 +65,7 @@ wss.on('connection', (ws) => {
           const url = newData.instructions.searchText.url;
           if (id) {
             axios.patch(
-              `${url}/api/people/update_status${id}/${id}`,
+              `${url}/api/people/update_status/${id}/${id}`,
               {
                 isOnline: false,
               },
