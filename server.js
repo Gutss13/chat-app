@@ -69,7 +69,6 @@ wss.on('connection', (ws) => {
           if (id) {
             axios.patch(
               `${url}/api/people/${id}/${id}/${searchText}`,
-              `http://localhost:3000/api/people/${id}/${id}/${searchText}`,
               {
                 isOnline: false,
               },
