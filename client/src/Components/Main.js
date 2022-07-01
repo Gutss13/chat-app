@@ -87,6 +87,13 @@ function Main(props) {
       });
     props.setIsLoggedIn(true);
 
+    axios
+      .get(`/api/people/personbyid/${localStorage.id}`)
+      .then((request) => {
+        return request.data;
+      })
+      .then((data) => setCurrUser(data[0]));
+
     const updateStatusLogIn = () => {
       axios
         .patch(
@@ -126,19 +133,40 @@ function Main(props) {
         })
       );
     };
-
+    const updateNotifications = (e) => {
+      const newData = JSON.parse(e.data);
+      if (newData.instruction === 'refreshNotifications') {
+        if (
+          document.activeElement === textInput.current &&
+          receiver &&
+          newData.msgSender === receiver.id
+        ) {
+          axios.patch(
+            `/api/notifications/${localStorage.id}/${receiver.id}/onSeen`
+          );
+        } else {
+          axios
+            .get(`/api/people/personbyid/${localStorage.id}`)
+            .then((request) => {
+              return request.data;
+            })
+            .then((data) => {
+              if (data[0]) {
+                setFriends([...data[0].friendList.friends]);
+                setCurrUser(data[0]);
+              }
+            });
+        }
+      }
+    };
     window.addEventListener('beforeunload', updateStatusLogOut);
     ws.addEventListener('open', updateStatusLogIn);
-    axios
-      .get(`/api/people/personbyid/${localStorage.id}`)
-      .then((request) => {
-        return request.data;
-      })
-      .then((data) => setCurrUser(data[0]));
+    ws.addEventListener('message', updateNotifications);
 
     return () => {
       window.removeEventListener('beforeunload', updateStatusLogOut);
-      ws.addEventListener('open', updateStatusLogIn);
+      ws.removeEventListener('open', updateStatusLogIn);
+      ws.removeEventListener('message', updateNotifications);
     };
   }, []);
 
@@ -257,8 +285,8 @@ function Main(props) {
             ws.send(
               JSON.stringify({
                 instructions: {
-                  instruction: ['refreshFriends'],
-                  me: localStorage.id,
+                  instruction: ['refreshNotifications'],
+                  msgSender: localStorage.id,
                 },
               })
             );
@@ -310,12 +338,13 @@ function Main(props) {
             ws.send(
               JSON.stringify({
                 instructions: {
-                  instruction: ['refreshFriends'],
-                  me: localStorage.id,
+                  instruction: ['refreshNotifications'],
+                  msgSender: localStorage.id,
                 },
               })
             );
           });
+
         const chatCopy = [...chat];
         chatCopy.push({
           chatData: textInput.current.value.trim(),
@@ -460,6 +489,7 @@ function Main(props) {
               setFriendSearchText={setFriendSearchText}
               setIsSeen={setIsSeen}
               setCurrUser={setCurrUser}
+              textInput={textInput}
             />
           </div>
         </div>

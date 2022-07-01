@@ -59,7 +59,7 @@ body {
   width: 100vw;
 }
 .mainDiv > div:first-child {
-  min-width: 20%;
+  min-width: 12%;
 }
 .peopleDiv {
   display: flex;
@@ -102,7 +102,6 @@ body {
 .peopleInnerDiv {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
 }
 .chatDiv {
   position: relative;
@@ -236,6 +235,13 @@ input[value='Add'] {
 .friend.messageOptions {
   position: absolute;
   left: 0px;
+}
+.friend.chatText {
+  padding-right: 15px;
+}
+.people.peopleInnerDiv {
+  display: flex;
+  justify-content: space-between;
 }
 .msgOpts {
   cursor: pointer;

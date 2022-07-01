@@ -113,6 +113,16 @@ wss.on('connection', (ws) => {
               })
             );
           }
+          if (
+            newData.instructions.instruction.includes('refreshNotifications')
+          ) {
+            client.send(
+              JSON.stringify({
+                instruction: 'refreshNotifications',
+                msgSender: newData.instructions.msgSender,
+              })
+            );
+          }
           if (newData.instructions.instruction.includes('removeReceiver')) {
             client.send(
               JSON.stringify({
