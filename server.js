@@ -27,7 +27,6 @@ app.use(express.json());
 
 const chatRouter = require('./routes/router');
 const wss = new WebSocket.Server({ server });
-
 app.use(express.static(path.resolve(__dirname, 'client/build')));
 app.get('/', (req, res) => {
   res.sendFile(path.resolve(__dirname, 'client/build', 'index.html'));
@@ -63,12 +62,10 @@ wss.on('connection', (ws) => {
         }
         if (newData.instructions.searchText) {
           const id = newData.instructions.searchText.id;
-          const searchText = newData.instructions.searchText.searchText;
-
           const url = newData.instructions.searchText.url;
           if (id) {
             axios.patch(
-              `${url}/api/people/${id}/${id}/${searchText}`,
+              `${url}/api/people/update_status${id}/${id}`,
               {
                 isOnline: false,
               },

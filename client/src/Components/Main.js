@@ -87,17 +87,34 @@ function Main(props) {
       });
     props.setIsLoggedIn(true);
 
-    axios
-      .get(`/api/people/personbyid/${localStorage.id}`)
-      .then((request) => {
-        return request.data;
-      })
-      .then((data) => setCurrUser(data[0]));
+    const updateStatusLogOut = () => {
+      ws.send(
+        JSON.stringify({
+          instructions: {
+            instruction: ['refreshFriends', 'refreshPeople'],
+            me: localStorage.id,
+            searchText: {
+              id: localStorage.id,
+              url: window.location.origin,
+            },
+          },
+        })
+      );
+    };
 
-    const updateStatusLogIn = () => {
+    window.addEventListener('beforeunload', updateStatusLogOut);
+    ws.addEventListener('close', updateStatusLogOut);
+    return () => {
+      window.removeEventListener('beforeunload', updateStatusLogOut);
+      ws.removeEventListener('close', updateStatusLogOut);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (currUser) {
       axios
         .patch(
-          `/api/people/${localStorage.id}/${localStorage.id}/${searchText}`,
+          `/api/people/update_status/${localStorage.id}`,
           {
             isOnline: true,
           },
@@ -107,7 +124,7 @@ function Main(props) {
             },
           }
         )
-        .then(
+        .then(() => {
           ws.send(
             JSON.stringify({
               instructions: {
@@ -115,32 +132,10 @@ function Main(props) {
                 me: localStorage.id,
               },
             })
-          )
-        );
-    };
-
-    const updateStatusLogOut = () => {
-      ws.send(
-        JSON.stringify({
-          instructions: {
-            instruction: ['refreshFriends', 'refreshPeople'],
-            searchText: {
-              id: localStorage.id,
-              searchText,
-              url: window.location.origin,
-            },
-          },
-        })
-      );
-    };
-
-    window.addEventListener('beforeunload', updateStatusLogOut);
-    ws.addEventListener('open', updateStatusLogIn);
-    return () => {
-      window.removeEventListener('beforeunload', updateStatusLogOut);
-      ws.removeEventListener('open', updateStatusLogIn);
-    };
-  }, []);
+          );
+        });
+    }
+  }, [currUser]);
 
   useEffect(() => {
     const updateChat = (e) => {
@@ -418,7 +413,7 @@ function Main(props) {
               e.preventDefault();
               axios
                 .patch(
-                  `/api/people/${localStorage.id}/${localStorage.id}/${searchText}`,
+                  `/api/people/update_status/${localStorage.id}`,
                   {
                     isOnline: false,
                   },

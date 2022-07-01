@@ -24,7 +24,7 @@ function Friends(props) {
             return request.data;
           })
           .then((data) => {
-            if (data[0]) {
+            if (data && data[0]) {
               props.setFriends([...data[0].friendList.friends]);
               props.setCurrUser(data[0]);
             }
