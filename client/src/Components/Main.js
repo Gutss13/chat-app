@@ -24,6 +24,7 @@ function Main(props) {
   const [currUser, setCurrUser] = useState('');
   const [isSeen, setIsSeen] = useState(false);
   const [replyTo, setReplyTo] = useState();
+  const [toggleFriends, setToggleFriends] = useState(false);
   const textInput = useRef(null);
 
   useEffect(() => {
@@ -459,33 +460,44 @@ function Main(props) {
             />
           </div>
           <div className="friendsDiv">
-            <span>Friends</span>
-            <SearchBar
-              setFriends={setFriends}
-              foundFriends={foundFriends}
-              setFoundFriends={setFoundFriends}
-              friendsInfo={friendsInfo}
-              friendSearchText={friendSearchText}
-              setFriendSearchText={setFriendSearchText}
-            />
-            <Friends
-              friendsInfo={friendsInfo}
-              setReceiver={setReceiver}
-              receiver={receiver}
-              setFriends={setFriends}
-              setChat={setChat}
-              chat={chat}
-              searchText={searchText}
-              setFoundPeople={setFoundPeople}
-              setAllPeople={setAllPeople}
-              setFoundFriends={setFoundFriends}
-              foundFriends={foundFriends}
-              friendSearchText={friendSearchText}
-              setFriendSearchText={setFriendSearchText}
-              setIsSeen={setIsSeen}
-              setCurrUser={setCurrUser}
-              textInput={textInput}
-            />
+            <button
+              className="friendsBtn"
+              onClick={() => {
+                setToggleFriends(!toggleFriends);
+              }}
+            >
+              Friends
+            </button>
+            <div
+              style={toggleFriends ? { display: 'none' } : { display: 'block' }}
+            >
+              <SearchBar
+                setFriends={setFriends}
+                foundFriends={foundFriends}
+                setFoundFriends={setFoundFriends}
+                friendsInfo={friendsInfo}
+                friendSearchText={friendSearchText}
+                setFriendSearchText={setFriendSearchText}
+              />
+              <Friends
+                friendsInfo={friendsInfo}
+                setReceiver={setReceiver}
+                receiver={receiver}
+                setFriends={setFriends}
+                setChat={setChat}
+                chat={chat}
+                searchText={searchText}
+                setFoundPeople={setFoundPeople}
+                setAllPeople={setAllPeople}
+                setFoundFriends={setFoundFriends}
+                foundFriends={foundFriends}
+                friendSearchText={friendSearchText}
+                setFriendSearchText={setFriendSearchText}
+                setIsSeen={setIsSeen}
+                setCurrUser={setCurrUser}
+                textInput={textInput}
+              />
+            </div>
           </div>
         </div>
       </div>

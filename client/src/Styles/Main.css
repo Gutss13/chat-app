@@ -1,5 +1,6 @@
 body {
   height: 100vh;
+  background-color: gray;
 }
 .people {
   color: lightgreen;
@@ -54,21 +55,20 @@ body {
 .mainDiv {
   display: flex;
   flex-direction: row;
-  background-color: gray;
   height: 100vh;
   width: 100vw;
 }
 .mainDiv > div:first-child {
   min-width: 12%;
+  padding-right: 10px;
+  border-right: 2px solid lightgray;
 }
 .peopleDiv {
   display: flex;
   flex-direction: column;
   text-align: center;
-  height: calc(100% - 25px);
-  border-right: 2px solid lightgray;
+  height: max-content;
   margin-left: 10px;
-  padding-right: 10px;
 }
 .inline-block {
   display: inline-block;
@@ -86,10 +86,10 @@ body {
   border-top: 2px solid lightgray;
   text-align: center;
 }
-.friendsDiv > div {
+.friendsDiv > div > div {
   width: 100%;
 }
-.friendsDiv > div > input {
+.friendsDiv > div > div > input {
   width: 100%;
 }
 .people {
@@ -308,13 +308,55 @@ input[value='Add'] {
   background-color: cyan;
   border-radius: 50px;
 }
-
-@media only screen and (max-width: 1024px) {
+.friendsBtn {
+  background-color: #13aa52;
+  border: 1px solid #13aa52;
+  border-radius: 4px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px 0;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 2px 15px;
+  text-align: center;
+}
+@media only screen and (max-width: 800px) {
+  .mainDiv {
+    display: flex;
+    flex-direction: column;
+  }
+  .mainDiv > div:first-child {
+    border: 0px;
+  }
+  .peopleInnerDiv > input[type='search'] {
+    width: 100%;
+  }
+  .friendsDiv:focus {
+    visibility: collapse;
+  }
+  .logOut {
+    position: relative;
+    text-align: end;
+    margin-right: 5px;
+  }
+  .logOut > button {
+    position: absolute;
+    left: 5px;
+  }
+  .chatDiv {
+    min-height: 80vh;
+    width: 100vw;
+    margin-right: 0px;
+    padding: 0px;
+  }
+  .chatDiv > div {
+    margin: 0px 5px;
+  }
   .chatText {
-    width: 50%;
+    width: 45%;
   }
 }
-@media only screen and (min-width: 1025px) {
+@media only screen and (min-width: 1201px) {
   .chatText {
     width: 35%;
   }
