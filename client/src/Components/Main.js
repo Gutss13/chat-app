@@ -96,7 +96,7 @@ function Main(props) {
     } else {
       setFriendsInfo([]);
     }
-  }, [currUser]);
+  }, [currUser, friends]);
 
   useEffect(() => {
     axios
