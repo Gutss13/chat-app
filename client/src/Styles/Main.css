@@ -242,6 +242,7 @@ textarea {
 }
 .myMsgOpts {
   position: absolute;
+  display: flex;
   left: -70px;
 }
 .myMsgOpts > div:first-child {
