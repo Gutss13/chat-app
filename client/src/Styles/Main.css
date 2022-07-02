@@ -500,9 +500,6 @@ input[value*='Requests'] {
     padding: 3px;
     box-sizing: border-box;
   }
-  .chatText > div {
-    text-align: center;
-  }
   .me.chatText {
     width: fit-content;
     padding-left: 5px;
