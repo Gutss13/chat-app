@@ -447,7 +447,7 @@ function Main(props) {
         }
       );
       setSearchResultsNodelist([...searchResultsNodelistCopy]);
-      if (!!searchResultsNodelistCopy) {
+      if (searchResultsNodelistCopy !== 0) {
         searchResultsNodelistCopy[0].scrollIntoView({
           behavior: 'smooth',
           block: 'center',
@@ -466,7 +466,7 @@ function Main(props) {
     const searchResultsNodelistCopy = [];
     e.preventDefault();
     if (e.target.parentNode.parentNode.parentNode.nextSibling) {
-      e.target.parentNode.parentNode.nextSibling.childNodes.forEach(
+      e.target.parentNode.parentNode.parentNode.nextSibling.childNodes.forEach(
         (element) => {
           if (
             element.lastChild &&
@@ -474,7 +474,7 @@ function Main(props) {
             element.lastChild.firstChild.lastChild &&
             element.lastChild.firstChild.lastChild.textContent
               .toLowerCase()
-              .includes(chatSearchInput.current.value.toLowerCase()).length > 0
+              .includes(chatSearchInput.current.value.toLowerCase())
           ) {
             searchResultsNodelistCopy.push(
               element.lastChild.firstChild.lastChild
@@ -494,7 +494,7 @@ function Main(props) {
         }
       );
       setSearchResultsNodelist([...searchResultsNodelistCopy]);
-      if (!!searchResultsNodelistCopy) {
+      if (searchResultsNodelistCopy.length !== 0) {
         searchResultsNodelistCopy[0].scrollIntoView({
           behavior: 'smooth',
           block: 'center',
