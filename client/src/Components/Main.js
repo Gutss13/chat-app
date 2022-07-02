@@ -456,7 +456,9 @@ function Main(props) {
               behavior: 'smooth',
               block: 'center',
             });
-            element.lastChild.firstChild.firstChild.focus();
+            element.lastChild.firstChild.firstChild.focus({
+              preventScroll: true,
+            });
           } else if (
             element.lastChild &&
             element.lastChild.firstChild.firstChild &&
@@ -468,7 +470,9 @@ function Main(props) {
               behavior: 'smooth',
               block: 'center',
             });
-            element.lastChild.firstChild.firstChild.focus();
+            element.lastChild.firstChild.firstChild.focus({
+              preventScroll: true,
+            });
           }
         }
       );
@@ -486,7 +490,9 @@ function Main(props) {
               behavior: 'smooth',
               block: 'center',
             });
-            element.lastChild.firstChild.lastChild.focus();
+            element.lastChild.firstChild.lastChild.focus({
+              preventScroll: true,
+            });
           } else if (
             element.lastChild &&
             element.lastChild.firstChild.firstChild &&
@@ -498,7 +504,9 @@ function Main(props) {
               behavior: 'smooth',
               block: 'center',
             });
-            element.lastChild.firstChild.firstChild.focus();
+            element.lastChild.firstChild.firstChild.focus({
+              preventScroll: true,
+            });
             console.log(element.lastChild.firstChild.firstChild);
           }
         }
