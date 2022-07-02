@@ -242,9 +242,6 @@ textarea {
 }
 .myMsgOpts {
   position: absolute;
-  display: flex;
-  flex-direction: column;
-  justify-content: start;
   left: -70px;
 }
 .myMsgOpts > div:first-child {
@@ -504,8 +501,7 @@ input[value*='Requests'] {
     box-sizing: border-box;
   }
   .chatText > div {
-    display: flex;
-    align-items: center;
+    text-align: center;
   }
   .me.chatText {
     width: fit-content;
