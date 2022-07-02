@@ -27,6 +27,11 @@ function Main(props) {
   const [isSeen, setIsSeen] = useState(false);
   const [replyTo, setReplyTo] = useState();
   const [toggleFriends, setToggleFriends] = useState(false);
+  const [searchResultsNodelist, setSearchResultsNodelist] = useState([]);
+  const [searchResultsIndex, setSearchResultsIndex] = useState({
+    length: 0,
+    current: 0,
+  });
   const textInput = useRef(null);
   const chatSearchInput = useRef(null);
 
@@ -411,76 +416,93 @@ function Main(props) {
     });
     setFriendsInfo(friendsInfoCopy);
   };
+  const handleChatSearchPress = (e) => {
+    const searchResultsNodelistCopy = [];
+    if (e.target.parentNode.parentNode.nextSibling) {
+      e.target.parentNode.parentNode.nextSibling.childNodes.forEach(
+        (element) => {
+          if (
+            element.lastChild &&
+            element.lastChild.firstChild &&
+            element.lastChild.firstChild.lastChild &&
+            element.lastChild.firstChild.lastChild.textContent
+              .toLowerCase()
+              .includes(chatSearchInput.current.value.toLowerCase())
+          ) {
+            searchResultsNodelistCopy.push(
+              element.lastChild.firstChild.lastChild
+            );
+          } else if (
+            element.lastChild &&
+            element.lastChild.firstChild &&
+            element.lastChild.firstChild.firstChild &&
+            element.lastChild.firstChild.firstChild.textContent
+              .toLowerCase()
+              .includes(chatSearchInput.current.value.toLowerCase())
+          ) {
+            searchResultsNodelistCopy.push(
+              element.lastChild.firstChild.firstChild
+            );
+          }
+        }
+      );
+      setSearchResultsNodelist([...searchResultsNodelistCopy]);
+      searchResultsNodelistCopy[0].scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+      searchResultsNodelistCopy[0].focus({
+        preventScroll: true,
+      });
+      setSearchResultsIndex({
+        length: searchResultsNodelistCopy.length - 1,
+        current: 0,
+      });
+    }
+  };
   const handleChatSearchClick = (e) => {
+    const searchResultsNodelistCopy = [];
     e.preventDefault();
     if (e.target.parentNode.parentNode.parentNode.nextSibling) {
       e.target.parentNode.parentNode.parentNode.nextSibling.childNodes.forEach(
         (element) => {
           if (
             element.lastChild &&
+            element.lastChild.firstChild &&
             element.lastChild.firstChild.lastChild &&
             element.lastChild.firstChild.lastChild.textContent
               .toLowerCase()
-              .includes(chatSearchInput.current.value.toLowerCase())
+              .includes(chatSearchInput.current.value.toLowerCase()).length > 0
           ) {
-            element.lastChild.firstChild.lastChild.scrollIntoView({
-              behavior: 'smooth',
-              block: 'center',
-            });
-            element.lastChild.firstChild.firstChild.focus({
-              preventScroll: true,
-            });
+            searchResultsNodelistCopy.push(
+              element.lastChild.firstChild.lastChild
+            );
           } else if (
             element.lastChild &&
+            element.lastChild.firstChild &&
             element.lastChild.firstChild.firstChild &&
             element.lastChild.firstChild.firstChild.textContent
               .toLowerCase()
               .includes(chatSearchInput.current.value.toLowerCase())
           ) {
-            element.lastChild.firstChild.firstChild.scrollIntoView({
-              behavior: 'smooth',
-              block: 'center',
-            });
-            element.lastChild.firstChild.firstChild.focus({
-              preventScroll: true,
-            });
+            searchResultsNodelistCopy.push(
+              element.lastChild.firstChild.firstChild
+            );
           }
         }
       );
-    } else if (e.target.parentNode.parentNode.nextSibling) {
-      e.target.parentNode.parentNode.nextSibling.childNodes.forEach(
-        (element) => {
-          if (
-            element.lastChild &&
-            element.lastChild.firstChild.lastChild &&
-            element.lastChild.firstChild.lastChild.textContent
-              .toLowerCase()
-              .includes(chatSearchInput.current.value.toLowerCase())
-          ) {
-            element.lastChild.firstChild.lastChild.scrollIntoView({
-              behavior: 'smooth',
-              block: 'center',
-            });
-            element.lastChild.firstChild.lastChild.focus({
-              preventScroll: true,
-            });
-          } else if (
-            element.lastChild &&
-            element.lastChild.firstChild.firstChild &&
-            element.lastChild.firstChild.firstChild.textContent
-              .toLowerCase()
-              .includes(chatSearchInput.current.value.toLowerCase())
-          ) {
-            element.lastChild.firstChild.firstChild.scrollIntoView({
-              behavior: 'smooth',
-              block: 'center',
-            });
-            element.lastChild.firstChild.firstChild.focus({
-              preventScroll: true,
-            });
-          }
-        }
-      );
+      setSearchResultsNodelist([...searchResultsNodelistCopy]);
+      searchResultsNodelistCopy[0].scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+      searchResultsNodelistCopy[0].focus({
+        preventScroll: true,
+      });
+      setSearchResultsIndex({
+        length: searchResultsNodelistCopy.length - 1,
+        current: 0,
+      });
     }
   };
   return (
@@ -597,7 +619,7 @@ function Main(props) {
                         document.getElementById('chatSearchInputId') &&
                       e.key === 'Enter'
                     ) {
-                      handleChatSearchClick(e);
+                      handleChatSearchPress(e);
                     }
                   }
                 }}
@@ -611,10 +633,98 @@ function Main(props) {
               >
                 <img src={search_image} alt="" />
               </button>
+              {!!searchResultsNodelist.length && (
+                <div
+                  className="close"
+                  onClick={() => {
+                    setSearchResultsNodelist([]);
+                    setSearchResultsIndex({ length: 0, current: 0 });
+                  }}
+                ></div>
+              )}
             </div>
           )}
         </div>
         <div className="chat">
+          {!!searchResultsNodelist.length && (
+            <div className="arrowContainer">
+              <div
+                className="arrow up"
+                onClick={() => {
+                  if (
+                    searchResultsIndex.current === searchResultsIndex.length
+                  ) {
+                    searchResultsNodelist[0].scrollIntoView({
+                      behavior: 'smooth',
+                      block: 'center',
+                    });
+                    searchResultsNodelist[0].focus({
+                      preventScroll: true,
+                    });
+                    setSearchResultsIndex({
+                      length: searchResultsIndex.length,
+                      current: 0,
+                    });
+                  } else {
+                    searchResultsNodelist[
+                      searchResultsIndex.current + 1
+                    ].scrollIntoView({
+                      behavior: 'smooth',
+                      block: 'center',
+                    });
+                    searchResultsNodelist[searchResultsIndex.current + 1].focus(
+                      {
+                        preventScroll: true,
+                      }
+                    );
+                    setSearchResultsIndex({
+                      length: searchResultsIndex.length,
+                      current: searchResultsIndex.current + 1,
+                    });
+                  }
+                }}
+              ></div>
+              <div className="chatSearchIndex">
+                {searchResultsIndex.current}/{searchResultsIndex.length}
+              </div>
+              <div
+                className="arrow down"
+                onClick={() => {
+                  if (searchResultsIndex.current === 0) {
+                    searchResultsNodelist[
+                      searchResultsIndex.length
+                    ].scrollIntoView({
+                      behavior: 'smooth',
+                      block: 'center',
+                    });
+                    searchResultsNodelist[searchResultsIndex.length].focus({
+                      preventScroll: true,
+                    });
+                    setSearchResultsIndex({
+                      length: searchResultsIndex.length,
+                      current: searchResultsIndex.length,
+                    });
+                  } else {
+                    searchResultsNodelist[
+                      searchResultsIndex.current - 1
+                    ].scrollIntoView({
+                      behavior: 'smooth',
+                      block: 'center',
+                    });
+                    searchResultsNodelist[searchResultsIndex.current - 1].focus(
+                      {
+                        preventScroll: true,
+                      }
+                    );
+                    setSearchResultsIndex({
+                      length: searchResultsIndex.length,
+                      current: searchResultsIndex.current - 1,
+                    });
+                  }
+                }}
+              ></div>
+            </div>
+          )}
           {replyTo && (
             <div className="replyDiv">
               <div
