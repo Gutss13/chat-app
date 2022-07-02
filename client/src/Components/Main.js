@@ -447,17 +447,19 @@ function Main(props) {
         }
       );
       setSearchResultsNodelist([...searchResultsNodelistCopy]);
-      searchResultsNodelistCopy[0].scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-      });
-      searchResultsNodelistCopy[0].focus({
-        preventScroll: true,
-      });
-      setSearchResultsIndex({
-        length: searchResultsNodelistCopy.length - 1,
-        current: 0,
-      });
+      if (!!searchResultsNodelistCopy) {
+        searchResultsNodelistCopy[0].scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
+        searchResultsNodelistCopy[0].focus({
+          preventScroll: true,
+        });
+        setSearchResultsIndex({
+          length: searchResultsNodelistCopy.length - 1,
+          current: 0,
+        });
+      }
     }
   };
   const handleChatSearchClick = (e) => {
@@ -492,17 +494,19 @@ function Main(props) {
         }
       );
       setSearchResultsNodelist([...searchResultsNodelistCopy]);
-      searchResultsNodelistCopy[0].scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-      });
-      searchResultsNodelistCopy[0].focus({
-        preventScroll: true,
-      });
-      setSearchResultsIndex({
-        length: searchResultsNodelistCopy.length - 1,
-        current: 0,
-      });
+      if (!!searchResultsNodelistCopy) {
+        searchResultsNodelistCopy[0].scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
+        searchResultsNodelistCopy[0].focus({
+          preventScroll: true,
+        });
+        setSearchResultsIndex({
+          length: searchResultsNodelistCopy.length - 1,
+          current: 0,
+        });
+      }
     }
   };
   return (
