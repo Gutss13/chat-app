@@ -610,7 +610,7 @@ function Main(props) {
                 type="text"
                 id="chatSearchInputId"
                 className="chatSearchTerm"
-                placeholder="What are you looking for?"
+                placeholder="Search chat"
                 ref={chatSearchInput}
                 onKeyDown={(e) => {
                   if (receiver) {
@@ -685,7 +685,7 @@ function Main(props) {
                 }}
               ></div>
               <div className="chatSearchIndex">
-                {searchResultsIndex.current}/{searchResultsIndex.length}
+                {searchResultsIndex.current + 1}/{searchResultsIndex.length + 1}
               </div>
               <div
                 className="arrow down"

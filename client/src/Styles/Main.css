@@ -379,6 +379,8 @@ input[value*='Requests'] {
 }
 
 .chatSearchTerm {
+  margin-right: 0px;
+  margin-left: auto;
   width: 100%;
   border: 3px solid #00b4cc;
   border-right: none;
@@ -473,8 +475,9 @@ input[value*='Requests'] {
   transition: border-width 150ms ease-in-out;
 }
 .arrowContainer {
-  position: sticky;
+  position: absolute;
   height: 100%;
+  left: 50%;
   bottom: 50%;
 }
 .arrow:hover {
@@ -483,11 +486,13 @@ input[value*='Requests'] {
   border-right-width: 6px;
 }
 .up {
+  cursor: pointer;
   position: absolute;
   bottom: 45px;
   left: 50%;
 }
 .down {
+  cursor: pointer;
   transform: rotate(45deg);
   position: absolute;
   bottom: -45px;
@@ -497,11 +502,13 @@ input[value*='Requests'] {
   position: absolute;
   left: calc(50% - 3px);
   bottom: 0px;
+  color: white;
 }
 .close {
   position: absolute;
-  left: -10%;
-  top: 5%;
+  left: -25px;
+  top: 4px;
+  cursor: pointer;
   opacity: 0.5;
 }
 .close {
@@ -512,9 +519,14 @@ input[value*='Requests'] {
   position: absolute;
   left: 10px;
   content: ' ';
-  height: 33px;
+  height: 25px;
   width: 3.5px;
   background-color: cyan;
+}
+.close:hover::before,
+.close:hover::after {
+  height: 27px;
+  width: 4px;
 }
 .close:before {
   transform: rotate(45deg);
@@ -582,8 +594,13 @@ input[value*='Requests'] {
     height: 31px;
   }
   .close {
-    right: -5px;
-    top: -5%;
+    left: 85px;
+    top: 2px;
+  }
+  .chatSearchTerm {
+    width: 30%;
+    margin-right: 0px;
+    margin-left: auto;
   }
 }
 @media only screen and (min-width: 1201px) {
