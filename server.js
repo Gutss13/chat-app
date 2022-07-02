@@ -120,6 +120,7 @@ wss.on('connection', (ws) => {
               JSON.stringify({
                 instruction: 'refreshNotifications',
                 msgSender: newData.instructions.msgSender,
+                msgReceiver: newData.instructions.msgReceiver,
               })
             );
           }

@@ -187,7 +187,7 @@ function Chat(props) {
                           ? { paddingLeft: '15px' }
                           : { paddingRight: '15pxs' }
                       }
-                      tabindex="0"
+                      tabIndex="0"
                     >
                       {chatVal.chatData}
                     </div>
@@ -199,7 +199,7 @@ function Chat(props) {
                         ? { paddingLeft: '15px' }
                         : { paddingRight: '15pxs' }
                     }
-                    tabindex="0"
+                    tabIndex="0"
                   >
                     {chatVal.chatData}
                   </div>

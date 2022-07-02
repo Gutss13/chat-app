@@ -31,28 +31,7 @@ function Main(props) {
   const chatSearchInput = useRef(null);
 
   useEffect(() => {
-    axios
-      .get(`/api/people/personbyid/${localStorage.id}`)
-      .then((request) => {
-        return request.data;
-      })
-      .then((data) => {
-        if (data && data[0]) {
-          setCurrUser(data[0]);
-          ws.send(
-            JSON.stringify({
-              instructions: {
-                instruction: ['refreshFriends', 'refreshPeople'],
-                me: localStorage.id,
-              },
-            })
-          );
-        }
-      });
-  }, [friends]);
-
-  useEffect(() => {
-    if (friends.length > 0 && currUser) {
+    if (currUser && friends.length > 0) {
       const friendsPromises = friends.map(async (friend) => {
         let friendData = await axios
           .get(`/api/people/personbyid/${friend}`)
@@ -62,13 +41,13 @@ function Main(props) {
           .then((data) => {
             if (
               currUser.notifications &&
-              data[0].id in currUser[0].notifications
+              data[0].id in currUser.notifications
             ) {
               return {
                 ...data[0],
                 notifications: {
-                  number: currUser[0].notifications[data[0].id].number,
-                  date: currUser[0].notifications[data[0].id].date,
+                  number: currUser.notifications[data[0].id].number,
+                  date: currUser.notifications[data[0].id].date,
                 },
               };
             } else {
@@ -96,7 +75,7 @@ function Main(props) {
     } else {
       setFriendsInfo([]);
     }
-  }, [currUser, friends]);
+  }, [friends]);
 
   useEffect(() => {
     axios
@@ -108,15 +87,30 @@ function Main(props) {
         if (data && data[0]) {
           setFriends([...data[0].friendList.friends]);
           setCurrUser(data[0]);
-          ws.send(
-            JSON.stringify({
-              instructions: {
-                instruction: ['refreshFriends', 'refreshPeople'],
-                me: localStorage.id,
-              },
-            })
-          );
         }
+      });
+
+    axios
+      .patch(
+        `/api/people/${localStorage.id}/${localStorage.id}/${searchText}`,
+        {
+          isOnline: true,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+      .then(() => {
+        ws.send(
+          JSON.stringify({
+            instructions: {
+              instruction: ['refreshFriends', 'refreshPeople'],
+              me: localStorage.id,
+            },
+          })
+        );
       });
 
     props.setIsLoggedIn(true);
@@ -143,31 +137,6 @@ function Main(props) {
       window.removeEventListener('beforeunload', updateStatusLogOut);
       ws.removeEventListener('close', updateStatusLogOut);
     };
-  }, []);
-
-  useEffect(() => {
-    axios
-      .patch(
-        `/api/people/${localStorage.id}/${localStorage.id}/${searchText}`,
-        {
-          isOnline: true,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      )
-      .then(() => {
-        ws.send(
-          JSON.stringify({
-            instructions: {
-              instruction: ['refreshFriends', 'refreshPeople'],
-              me: localStorage.id,
-            },
-          })
-        );
-      });
   }, []);
 
   useEffect(() => {
@@ -216,7 +185,10 @@ function Main(props) {
     };
     const updateNotifications = (e) => {
       const newData = JSON.parse(e.data);
-      if (newData.instruction === 'refreshNotifications') {
+      if (
+        newData.instruction === 'refreshNotifications' &&
+        newData.msgReceiver === localStorage.id
+      ) {
         if (
           document.activeElement === textInput.current &&
           receiver &&
@@ -237,8 +209,6 @@ function Main(props) {
                 setCurrUser(data[0]);
               }
             });
-        }
-        if (newData.msgSender === receiver.id) {
           new Audio(messageReceived).play();
         }
       }
@@ -316,6 +286,7 @@ function Main(props) {
                 instructions: {
                   instruction: ['refreshNotifications'],
                   msgSender: localStorage.id,
+                  msgReceiver: receiver.id,
                 },
               })
             );
@@ -369,6 +340,7 @@ function Main(props) {
                 instructions: {
                   instruction: ['refreshNotifications'],
                   msgSender: localStorage.id,
+                  msgReceiver: receiver.id,
                 },
               })
             );
@@ -506,7 +478,6 @@ function Main(props) {
             element.lastChild.firstChild.firstChild.focus({
               preventScroll: true,
             });
-            console.log(element.lastChild.firstChild.firstChild);
           }
         }
       );
@@ -611,35 +582,37 @@ function Main(props) {
       <div className="chatDiv">
         <div>
           {receiver && `To: ${receiver.name}`}
-          <div className="chatSearch">
-            <input
-              type="text"
-              id="chatSearchInputId"
-              className="chatSearchTerm"
-              placeholder="What are you looking for?"
-              ref={chatSearchInput}
-              onKeyDown={(e) => {
-                if (receiver) {
-                  if (
-                    document.activeElement ===
-                      document.getElementById('chatSearchInputId') &&
-                    e.key === 'Enter'
-                  ) {
-                    handleChatSearchClick(e);
+          {receiver && (
+            <div className="chatSearch">
+              <input
+                type="text"
+                id="chatSearchInputId"
+                className="chatSearchTerm"
+                placeholder="What are you looking for?"
+                ref={chatSearchInput}
+                onKeyDown={(e) => {
+                  if (receiver) {
+                    if (
+                      document.activeElement ===
+                        document.getElementById('chatSearchInputId') &&
+                      e.key === 'Enter'
+                    ) {
+                      handleChatSearchClick(e);
+                    }
                   }
-                }
-              }}
-            />
-            <button
-              type="submit"
-              className="chatSearchButton"
-              onClick={(e) => {
-                handleChatSearchClick(e);
-              }}
-            >
-              <img src={search_image} alt="" />
-            </button>
-          </div>
+                }}
+              />
+              <button
+                type="submit"
+                className="chatSearchButton"
+                onClick={(e) => {
+                  handleChatSearchClick(e);
+                }}
+              >
+                <img src={search_image} alt="" />
+              </button>
+            </div>
+          )}
         </div>
         <div className="chat">
           {replyTo && (
