@@ -399,6 +399,7 @@ input[value*='Requests'] {
   background: #00b4cc;
   text-align: center;
   color: #fff;
+  cursor: pointer;
   border-radius: 0 5px 5px 0;
 }
 .friendsSearch {
@@ -447,6 +448,13 @@ input[value*='Requests'] {
   border-radius: 0 5px 5px 0;
   cursor: pointer;
   font-size: 14px;
+}
+.chat > div > div > div:focus-within {
+  border-radius: 10px 10px 10px 0px;
+  border-bottom: 5px solid #00b4cc;
+}
+.chat > div > div > div > div:focus {
+  outline: none;
 }
 @media only screen and (max-width: 800px) {
   .mainDiv {

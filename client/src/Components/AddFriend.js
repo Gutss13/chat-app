@@ -694,6 +694,7 @@ function AddFriend(props) {
                             }}
                           />
                           <input
+                            type="button"
                             value="Reject"
                             className={person.id}
                             onClick={(e) => {

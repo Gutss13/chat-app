@@ -32,46 +32,68 @@ function Main(props) {
 
   useEffect(() => {
     if (friends.length > 0) {
-      const friendsPromises = friends.map(async (friend) => {
-        let friendData = await axios
-          .get(`/api/people/personbyid/${friend}`)
-          .then((request) => {
-            return request.data;
-          })
-          .then((data) => {
-            if (
-              currUser.notifications &&
-              data[0].id in currUser.notifications
-            ) {
-              return {
-                ...data[0],
-                notifications: {
-                  number: currUser.notifications[data[0].id].number,
-                  date: currUser.notifications[data[0].id].date,
+      axios
+        .get(`/api/people/personbyid/${localStorage.id}`)
+        .then((request) => {
+          return request.data;
+        })
+        .then((myData) => {
+          if (myData && myData[0]) {
+            setCurrUser(myData[0]);
+            ws.send(
+              JSON.stringify({
+                instructions: {
+                  instruction: ['refreshFriends', 'refreshPeople'],
+                  me: localStorage.id,
                 },
-              };
-            } else {
-              return {
-                ...data[0],
-                notifications: { number: 0 },
-              };
-            }
-          });
-        return friendData;
-      });
-      Promise.all(friendsPromises).then((friendsArr) => {
-        const friendsInfoCopy = friendsArr;
-        friendsInfoCopy.sort((a, b) => {
-          if (a.notifications.number !== 0 && b.notifications.number !== 0) {
-            return b.notifications.date - a.notifications.date;
-          } else if (b.notifications.number !== 0) {
-            return 1;
-          } else {
-            return b.isOnline - a.isOnline;
+              })
+            );
+
+            const friendsPromises = friends.map(async (friend) => {
+              let friendData = await axios
+                .get(`/api/people/personbyid/${friend}`)
+                .then((request) => {
+                  return request.data;
+                })
+                .then((data) => {
+                  if (
+                    myData[0].notifications &&
+                    data[0].id in myData[0].notifications
+                  ) {
+                    return {
+                      ...data[0],
+                      notifications: {
+                        number: myData[0].notifications[data[0].id].number,
+                        date: myData[0].notifications[data[0].id].date,
+                      },
+                    };
+                  } else {
+                    return {
+                      ...data[0],
+                      notifications: { number: 0 },
+                    };
+                  }
+                });
+              return friendData;
+            });
+            Promise.all(friendsPromises).then((friendsArr) => {
+              const friendsInfoCopy = friendsArr;
+              friendsInfoCopy.sort((a, b) => {
+                if (
+                  a.notifications.number !== 0 &&
+                  b.notifications.number !== 0
+                ) {
+                  return b.notifications.date - a.notifications.date;
+                } else if (b.notifications.number !== 0) {
+                  return 1;
+                } else {
+                  return b.isOnline - a.isOnline;
+                }
+              });
+              setFriendsInfo([...friendsInfoCopy]);
+            });
           }
         });
-        setFriendsInfo([...friendsInfoCopy]);
-      });
     } else {
       setFriendsInfo([]);
     }
@@ -87,8 +109,17 @@ function Main(props) {
         if (data && data[0]) {
           setFriends([...data[0].friendList.friends]);
           setCurrUser(data[0]);
+          ws.send(
+            JSON.stringify({
+              instructions: {
+                instruction: ['refreshFriends', 'refreshPeople'],
+                me: localStorage.id,
+              },
+            })
+          );
         }
       });
+
     props.setIsLoggedIn(true);
 
     const updateStatusLogOut = () => {
@@ -207,6 +238,8 @@ function Main(props) {
                 setCurrUser(data[0]);
               }
             });
+        }
+        if (newData.msgSender === receiver.id) {
           new Audio(messageReceived).play();
         }
       }
@@ -407,6 +440,71 @@ function Main(props) {
     });
     setFriendsInfo(friendsInfoCopy);
   };
+  const handleChatSearchClick = (e) => {
+    e.preventDefault();
+    if (e.target.parentNode.parentNode.parentNode.nextSibling) {
+      e.target.parentNode.parentNode.parentNode.nextSibling.childNodes.forEach(
+        (element) => {
+          if (
+            element.lastChild &&
+            element.lastChild.firstChild.lastChild &&
+            element.lastChild.firstChild.lastChild.textContent
+              .toLowerCase()
+              .includes(chatSearchInput.current.value.toLowerCase())
+          ) {
+            element.lastChild.firstChild.lastChild.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center',
+            });
+            element.lastChild.firstChild.firstChild.focus();
+          } else if (
+            element.lastChild &&
+            element.lastChild.firstChild.firstChild &&
+            element.lastChild.firstChild.firstChild.textContent
+              .toLowerCase()
+              .includes(chatSearchInput.current.value.toLowerCase())
+          ) {
+            element.lastChild.firstChild.firstChild.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center',
+            });
+            element.lastChild.firstChild.firstChild.focus();
+          }
+        }
+      );
+    } else if (e.target.parentNode.parentNode.nextSibling) {
+      e.target.parentNode.parentNode.nextSibling.childNodes.forEach(
+        (element) => {
+          if (
+            element.lastChild &&
+            element.lastChild.firstChild.lastChild &&
+            element.lastChild.firstChild.lastChild.textContent
+              .toLowerCase()
+              .includes(chatSearchInput.current.value.toLowerCase())
+          ) {
+            element.lastChild.firstChild.lastChild.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center',
+            });
+            element.lastChild.firstChild.lastChild.focus();
+          } else if (
+            element.lastChild &&
+            element.lastChild.firstChild.firstChild &&
+            element.lastChild.firstChild.firstChild.textContent
+              .toLowerCase()
+              .includes(chatSearchInput.current.value.toLowerCase())
+          ) {
+            element.lastChild.firstChild.firstChild.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center',
+            });
+            element.lastChild.firstChild.firstChild.focus();
+            console.log(element.lastChild.firstChild.firstChild);
+          }
+        }
+      );
+    }
+  };
   return (
     <div className="mainDiv">
       <div>
@@ -448,6 +546,7 @@ function Main(props) {
         <div className="peopleDiv">
           <div className="addFriendDiv">
             <AddFriend
+              setCurrUser={setCurrUser}
               setFriends={setFriends}
               receiver={receiver}
               setReceiver={setReceiver}
@@ -508,44 +607,28 @@ function Main(props) {
           <div className="chatSearch">
             <input
               type="text"
+              id="chatSearchInputId"
               className="chatSearchTerm"
               placeholder="What are you looking for?"
               ref={chatSearchInput}
-              onChange={(e) => {
-                if (chatSearchInput.current.value.length > 2)
-                  e.target.parentNode.parentNode.nextSibling.childNodes.forEach(
-                    (element) => {
-                      if (
-                        element.lastChild &&
-                        element.lastChild.firstChild.lastChild &&
-                        element.lastChild.firstChild.lastChild.textContent
-                          .toLowerCase()
-                          .includes(chatSearchInput.current.value.toLowerCase())
-                      ) {
-                        element.lastChild.firstChild.lastChild.scrollIntoView({
-                          behavior: 'smooth',
-                          block: 'center',
-                        });
-                      } else if (
-                        element.lastChild &&
-                        element.lastChild.firstChild.firstChild &&
-                        element.lastChild.firstChild.firstChild.textContent
-                          .toLowerCase()
-                          .includes(chatSearchInput.current.value.toLowerCase())
-                      ) {
-                        element.lastChild.firstChild.firstChild.scrollIntoView({
-                          behavior: 'smooth',
-                          block: 'center',
-                        });
-                      }
-                    }
-                  );
+              onKeyDown={(e) => {
+                if (receiver) {
+                  if (
+                    document.activeElement ===
+                      document.getElementById('chatSearchInputId') &&
+                    e.key === 'Enter'
+                  ) {
+                    handleChatSearchClick(e);
+                  }
+                }
               }}
             />
             <button
               type="submit"
               className="chatSearchButton"
-              onClick={(e) => e.preventDefault()}
+              onClick={(e) => {
+                handleChatSearchClick(e);
+              }}
             >
               <img src={search_image} alt="" />
             </button>
