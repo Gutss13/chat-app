@@ -464,7 +464,7 @@ function Main(props) {
     const searchResultsNodelistCopy = [];
     e.preventDefault();
     if (e.target.parentNode.parentNode.parentNode.nextSibling) {
-      e.target.parentNode.parentNode.parentNode.nextSibling.childNodes.forEach(
+      e.target.parentNode.parentNode.nextSibling.childNodes.forEach(
         (element) => {
           if (
             element.lastChild &&
