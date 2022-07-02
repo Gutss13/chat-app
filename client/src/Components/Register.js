@@ -122,15 +122,13 @@ function Register(props) {
         </div>
         <input type="hidden" value={uuidv4()} required ref={idInput} />
         <div>
-          <button
+          <input
             type="button"
             value="submit"
             onClick={(e) => {
               handleSubmit(e);
             }}
-          >
-            Submit
-          </button>
+          />
         </div>
       </form>
     </div>

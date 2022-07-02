@@ -55,14 +55,13 @@ function Login(props) {
           <input type="password" id="password" ref={passwordInput} required />
         </div>
         <div>
-          <button
+          <input
             type="button"
+            value="Submit"
             onClick={(e) => {
               handleSubmit(e);
             }}
-          >
-            Submit
-          </button>
+          />
         </div>
         {userError && userError.email ? (
           <div className="validationDiv">{userError.email}</div>

@@ -549,7 +549,7 @@ function AddFriend(props) {
           <input
             type="button"
             style={{ marginTop: '5px' }}
-            value="Add friend"
+            value="Add Friend"
             className="inline-block"
             onClick={() => {
               setIsSearch(true);
@@ -559,23 +559,25 @@ function AddFriend(props) {
       ) : (
         <div>
           <div className="peopleInnerDiv" style={{ marginTop: '5px' }}>
-            <input
-              type="search"
-              placeholder="Search People"
-              className="searchBar"
-              ref={searchInput}
-              onChange={(e) => {
-                handleChange(e);
-              }}
-            />
-            <input
-              type="button"
-              className="inline-block"
-              value="Cancel"
-              onClick={() => {
-                setIsSearch(false);
-              }}
-            />
+            <div className="peopleSearch">
+              <input
+                type="search"
+                className="peopleSearchTerm"
+                placeholder="Search People"
+                ref={searchInput}
+                onChange={(e) => {
+                  handleChange(e);
+                }}
+              />
+              <input
+                type="button"
+                className="peopleSearchButton"
+                value="Cancel"
+                onClick={() => {
+                  setIsSearch(false);
+                }}
+              />
+            </div>
           </div>
 
           <div className="peopleContainer">
@@ -683,25 +685,21 @@ function AddFriend(props) {
                             localStorage.id
                         ) ? (
                         <div>
-                          <button
+                          <input
                             type="button"
                             value="Accept"
                             className={person.id}
                             onClick={(e) => {
                               acceptFriendRequest(e);
                             }}
-                          >
-                            Accept
-                          </button>
-                          <button
+                          />
+                          <input
                             value="Reject"
                             className={person.id}
                             onClick={(e) => {
                               rejectFriendRequest(e);
                             }}
-                          >
-                            Reject
-                          </button>
+                          />
                         </div>
                       ) : (
                         <input

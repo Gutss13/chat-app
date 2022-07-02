@@ -37,17 +37,19 @@ function SearchBar(props) {
   };
 
   return (
-    <div>
-      <input
-        type="search"
-        placeholder="Search Friends"
-        style={{ marginTop: '5px' }}
-        ref={searchInput}
-        onChange={(e) => {
-          handleChange(e);
-        }}
-      />
-    </div>
+    <>
+      <div className="friendsSearch">
+        <input
+          type="text"
+          className="friendsSearchTerm"
+          placeholder="Search Friends"
+          ref={searchInput}
+          onChange={(e) => {
+            handleChange(e);
+          }}
+        />
+      </div>
+    </>
   );
 }
 

@@ -264,43 +264,51 @@ function FriendRequests(props) {
 
   return (
     <>
-      <button
+      <input
         className="inline-block"
+        type="button"
+        value={`Requests (${props.incomingRequests.length})`}
         onClick={() => setIsRequestsShown(!isRequestsShown)}
-      >
-        Requests ({props.incomingRequests.length})
-      </button>
-      {isRequestsShown && props.incomingRequests.length > 0
-        ? props.incomingRequests.map((element, i) => {
-            return (
-              <div key={i} className="people peopleInnerDiv">
+      />
+
+      {isRequestsShown && props.incomingRequests.length > 0 ? (
+        props.incomingRequests.map((element, i) => {
+          return (
+            <div key={i} className="people peopleInnerDiv">
+              <div>
                 <div>
-                  <div>
-                    {element.first_name} {element.last_name}
-                  </div>
-                </div>
-                <div>
-                  <input
-                    type="button"
-                    value="Accept"
-                    className={element.id}
-                    onClick={(e) => {
-                      acceptFriendRequest(e);
-                    }}
-                  />
-                  <input
-                    type="button"
-                    value="Reject"
-                    className={element.id}
-                    onClick={(e) => {
-                      rejectFriendRequest(e);
-                    }}
-                  />
+                  {element.first_name} {element.last_name}
                 </div>
               </div>
-            );
-          })
-        : null}
+              <div>
+                <input
+                  type="button"
+                  value="Accept"
+                  className={element.id}
+                  onClick={(e) => {
+                    acceptFriendRequest(e);
+                  }}
+                />
+                <input
+                  type="button"
+                  value="Reject"
+                  className={element.id}
+                  onClick={(e) => {
+                    rejectFriendRequest(e);
+                  }}
+                />
+              </div>
+            </div>
+          );
+        })
+      ) : isRequestsShown ? (
+        <div
+          className="noRequests peopleInnerDiv"
+          style={{ textAlign: 'center' }}
+        >
+          You have no incoming requests
+        </div>
+      ) : null}
     </>
   );
 }

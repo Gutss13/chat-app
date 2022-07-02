@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import '../Styles/reset.css';
 import '../Styles/Main.css';
+import messageReceived from '../Sounds/message_sound.mp3';
+import search_image from '../Images/search_icon.png';
 import ws from './socketConfig';
 import SearchBar from './SearchBar';
 import Chat from './Chat';
@@ -26,6 +28,7 @@ function Main(props) {
   const [replyTo, setReplyTo] = useState();
   const [toggleFriends, setToggleFriends] = useState(false);
   const textInput = useRef(null);
+  const chatSearchInput = useRef(null);
 
   useEffect(() => {
     if (friends.length > 0) {
@@ -113,31 +116,29 @@ function Main(props) {
   }, []);
 
   useEffect(() => {
-    if (currUser) {
-      axios
-        .patch(
-          `/api/people/${localStorage.id}/${localStorage.id}/${searchText}`,
-          {
-            isOnline: true,
+    axios
+      .patch(
+        `/api/people/${localStorage.id}/${localStorage.id}/${searchText}`,
+        {
+          isOnline: true,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
           },
-          {
-            headers: {
-              'Content-Type': 'application/json',
+        }
+      )
+      .then(() => {
+        ws.send(
+          JSON.stringify({
+            instructions: {
+              instruction: ['refreshFriends', 'refreshPeople'],
+              me: localStorage.id,
             },
-          }
-        )
-        .then(() => {
-          ws.send(
-            JSON.stringify({
-              instructions: {
-                instruction: ['refreshFriends', 'refreshPeople'],
-                me: localStorage.id,
-              },
-            })
-          );
-        });
-    }
-  }, [currUser]);
+          })
+        );
+      });
+  }, []);
 
   useEffect(() => {
     const updateChat = (e) => {
@@ -206,13 +207,13 @@ function Main(props) {
                 setCurrUser(data[0]);
               }
             });
+          new Audio(messageReceived).play();
         }
       }
     };
     ws.addEventListener('message', updateChat);
     ws.addEventListener('message', updateChatStatusTyping);
     ws.addEventListener('message', updateNotifications);
-
     return () => {
       ws.removeEventListener('message', updateChat);
       ws.removeEventListener('message', updateChatStatusTyping);
@@ -246,7 +247,7 @@ function Main(props) {
 
   const handleSendClick = () => {
     const msgId = uuidv4();
-    if (textInput.current.value) {
+    if (textInput.current.value && textInput.current.value.trim()) {
       if (replyTo) {
         axios
           .post(
@@ -290,7 +291,7 @@ function Main(props) {
 
         const chatCopy = [...chat];
         chatCopy.push({
-          chatData: textInput.current.value.trim(),
+          chatData: textInput.current.value,
           sender_id: localStorage.id,
           receiver_id: receiver.id,
           id: msgId,
@@ -355,6 +356,7 @@ function Main(props) {
 
         setChat(chatCopy);
       }
+      textInput.current.focus();
       textInput.current.value = '';
     }
     setIsTyping(false);
@@ -409,8 +411,9 @@ function Main(props) {
     <div className="mainDiv">
       <div>
         <div className="logOut">
-          <button
+          <input
             type="button"
+            value="Log Out"
             onClick={(e) => {
               e.preventDefault();
               axios
@@ -438,9 +441,7 @@ function Main(props) {
               props.setIsLoggedIn(false);
               localStorage.clear();
             }}
-          >
-            Log Out
-          </button>
+          />
           <span className="loggedIn">Logged in: </span>
           <span className="currUser">{currUser && currUser.full_name}</span>
         </div>
@@ -460,14 +461,14 @@ function Main(props) {
             />
           </div>
           <div className="friendsDiv">
-            <button
+            <input
+              type="button"
               className="friendsBtn"
+              value="Friends"
               onClick={() => {
                 setToggleFriends(!toggleFriends);
               }}
-            >
-              Friends
-            </button>
+            />
             <div
               style={toggleFriends ? { display: 'none' } : { display: 'block' }}
             >
@@ -502,7 +503,54 @@ function Main(props) {
         </div>
       </div>
       <div className="chatDiv">
-        <div>{receiver && `To: ${receiver.name}`}</div>
+        <div>
+          {receiver && `To: ${receiver.name}`}
+          <div className="chatSearch">
+            <input
+              type="text"
+              className="chatSearchTerm"
+              placeholder="What are you looking for?"
+              ref={chatSearchInput}
+              onChange={(e) => {
+                if (chatSearchInput.current.value.length > 2)
+                  e.target.parentNode.parentNode.nextSibling.childNodes.forEach(
+                    (element) => {
+                      if (
+                        element.lastChild &&
+                        element.lastChild.firstChild.lastChild &&
+                        element.lastChild.firstChild.lastChild.textContent
+                          .toLowerCase()
+                          .includes(chatSearchInput.current.value.toLowerCase())
+                      ) {
+                        element.lastChild.firstChild.lastChild.scrollIntoView({
+                          behavior: 'smooth',
+                          block: 'center',
+                        });
+                      } else if (
+                        element.lastChild &&
+                        element.lastChild.firstChild.firstChild &&
+                        element.lastChild.firstChild.firstChild.textContent
+                          .toLowerCase()
+                          .includes(chatSearchInput.current.value.toLowerCase())
+                      ) {
+                        element.lastChild.firstChild.firstChild.scrollIntoView({
+                          behavior: 'smooth',
+                          block: 'center',
+                        });
+                      }
+                    }
+                  );
+              }}
+            />
+            <button
+              type="submit"
+              className="chatSearchButton"
+              onClick={(e) => e.preventDefault()}
+            >
+              <img src={search_image} alt="" />
+            </button>
+          </div>
+        </div>
         <div className="chat">
           {replyTo && (
             <div className="replyDiv">
@@ -579,7 +627,6 @@ function Main(props) {
               <div>
                 <textarea
                   autoFocus
-                  rows="5"
                   id="textareaId"
                   onChange={(e) => {
                     handleChangeTyping(e);
@@ -622,15 +669,14 @@ function Main(props) {
                 ></textarea>
               </div>
               <div>
-                <button
+                <input
                   type="button"
+                  value="Send"
                   onClick={(e) => {
                     e.preventDefault();
                     handleSendClick();
                   }}
-                >
-                  Send
-                </button>
+                />
               </div>
             </div>
           </div>

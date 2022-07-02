@@ -188,7 +188,7 @@ function Chat(props) {
                           : { paddingRight: '15pxs' }
                       }
                     >
-                      {chatVal.chatData}
+                      s{chatVal.chatData}
                     </div>
                   </div>
                 ) : (

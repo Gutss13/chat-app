@@ -113,6 +113,7 @@ body {
   grid-template-rows: 1fr 10fr 1fr;
 }
 .chatDiv > div:first-child {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -132,6 +133,7 @@ body {
 }
 .sendTextDiv {
   width: 100%;
+  height: calc(100% - 20px);
   display: grid;
   grid-template-columns: 11fr 1fr;
   gap: 10px;
@@ -139,6 +141,7 @@ body {
   padding-top: 5px;
 }
 textarea {
+  height: 100%;
   width: 100%;
   resize: none;
 }
@@ -195,21 +198,9 @@ textarea {
   max-height: 35vh;
   overflow: auto;
 }
-.sendTextDiv > div:last-child > button {
+.sendTextDiv > div:last-child > input {
   width: 100%;
-  height: 100%;
-}
-input[value='Remove'] {
-  color: red;
-}
-input[value='Reject'] {
-  color: red;
-}
-input[value='Accept'] {
-  color: green;
-}
-input[value='Add'] {
-  color: green;
+  height: calc(100% + 8px);
 }
 .isSeen {
   font-size: small;
@@ -308,6 +299,7 @@ input[value='Add'] {
   background-color: cyan;
   border-radius: 50px;
 }
+
 .friendsBtn {
   background-color: #13aa52;
   border: 1px solid #13aa52;
@@ -317,8 +309,144 @@ input[value='Add'] {
   color: #fff;
   cursor: pointer;
   font-size: 16px;
-  padding: 2px 15px;
+  padding: 2px 20px;
   text-align: center;
+}
+input[value='Log Out'],
+input[value='Remove'],
+input[value='Reject'] {
+  background-color: #ff4742;
+  border: 1px solid #ff4742;
+  border-radius: 4px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px 0;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0px 5px;
+  text-align: center;
+}
+input[value*='Requests'],
+input[value='Add Friend'],
+input[value='Accept'],
+input[value='Add'] {
+  background-color: #13aa52;
+  border: 1px solid #13aa52;
+  border-radius: 4px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px 0;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0px 5px;
+  text-align: center;
+}
+input[value='Cancel Request'] {
+  background-color: white;
+  border: 1px solid white;
+  border-radius: 4px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px 0;
+  box-sizing: border-box;
+  color: #212121;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0px 5px;
+  text-align: center;
+}
+input[value*='Requests'] {
+  margin-right: 5px;
+}
+.noRequests {
+  background-color: darkslategray;
+  border: 1px solid darkslategray;
+  border-radius: 4px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px 0;
+  box-sizing: border-box;
+  color: white;
+  font-size: 14px;
+  padding: 2px 0px;
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.chatSearch {
+  width: fit-content;
+  position: absolute;
+  right: 0px;
+  display: flex;
+}
+
+.chatSearchTerm {
+  width: 100%;
+  border: 3px solid #00b4cc;
+  border-right: none;
+  padding: 5px 20px;
+  height: 20px;
+  border-radius: 15px 0 0 15px;
+  outline: none;
+  color: #9dbfaf;
+}
+
+.chatSearchTerm:focus {
+  color: #00b4cc;
+}
+
+.chatSearchButton {
+  width: 40px;
+  height: 36px;
+  border: 1px solid #00b4cc;
+  background: #00b4cc;
+  text-align: center;
+  color: #fff;
+  border-radius: 0 5px 5px 0;
+}
+.friendsSearch {
+  margin-top: 5px;
+  display: flex;
+}
+
+.friendsSearchTerm {
+  width: 100%;
+  border: 3px solid darkslategray;
+  padding: 5px 20px;
+  height: 15px;
+  border-radius: 15px;
+  outline: none;
+  color: rgb(121, 121, 121);
+}
+.friendsSearchTerm:focus {
+  color: black;
+}
+.peopleSearch {
+  display: flex;
+  width: 100%;
+}
+
+.peopleSearchTerm {
+  width: 100%;
+  border: 3px solid #00b4cc;
+  border-right: none;
+  padding: 5px 20px;
+  height: 30px;
+  border-radius: 15px 0 0 15px;
+  outline: none;
+  color: #9dbfaf;
+}
+
+.peopleSearchTerm:focus {
+  color: #00b4cc;
+}
+.peopleSearchButton {
+  height: 30px;
+  border: 1px solid #00b4cc;
+  background: #00b4cc;
+  text-align: center;
+  color: #fff;
+  box-sizing: border-box;
+  border-radius: 0 5px 5px 0;
+  cursor: pointer;
+  font-size: 14px;
 }
 @media only screen and (max-width: 800px) {
   .mainDiv {
@@ -331,17 +459,16 @@ input[value='Add'] {
   .peopleInnerDiv > input[type='search'] {
     width: 100%;
   }
-  .friendsDiv:focus {
-    visibility: collapse;
-  }
   .logOut {
     position: relative;
     text-align: end;
     margin-right: 5px;
+    margin-top: 4px;
   }
-  .logOut > button {
+  .logOut > input {
     position: absolute;
     left: 5px;
+    top: -4px;
   }
   .chatDiv {
     min-height: 80vh;
@@ -352,8 +479,37 @@ input[value='Add'] {
   .chatDiv > div {
     margin: 0px 5px;
   }
+  .chatDiv > div:first-child {
+    justify-content: space-evenly;
+  }
   .chatText {
-    width: 45%;
+    min-width: 5%;
+    max-width: 45%;
+    padding: 3px;
+    box-sizing: border-box;
+  }
+  .chatText > div {
+    display: flex;
+    align-items: center;
+  }
+  .me.chatText {
+    width: fit-content;
+    padding-left: 5px;
+    padding-right: 8px;
+  }
+  .friend.chatText {
+    width: fit-content;
+    padding-left: 5px;
+    padding-right: 20px;
+  }
+  .chatSearch {
+    position: relative;
+  }
+  .chatSearchTerm {
+    height: 15px;
+  }
+  .chatSearchButton {
+    height: 31px;
   }
 }
 @media only screen and (min-width: 1201px) {

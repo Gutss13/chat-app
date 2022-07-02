@@ -10,22 +10,20 @@ function FirstLogin(props) {
   return (
     <div className="authorization">
       <div>
-        <button
+        <input
           type="button"
+          value="Register"
           onClick={() => {
             setIsRegister(true);
           }}
-        >
-          Register
-        </button>
-        <button
+        />
+        <input
           type="button"
+          value="Log In"
           onClick={() => {
             setIsRegister(false);
           }}
-        >
-          Log In
-        </button>
+        />
       </div>
       <div>
         {isRegister ? (
