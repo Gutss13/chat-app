@@ -566,6 +566,31 @@ input[value*='Requests'] {
   top: 10px;
   cursor: pointer;
 }
+.editedMessageFlex {
+  display: flex;
+  flex-flow: wrap;
+}
+.editedMessageFlex > div:first-child {
+  min-width: max-content;
+  cursor: pointer;
+  color: rgb(66, 76, 85);
+}
+.editedMessageFlex > div:only-child {
+  min-width: auto;
+  cursor: auto;
+  color: black;
+}
+.editHistory {
+  position: absolute;
+  left: 50%;
+  bottom: 2%;
+  display: flex;
+  overflow: auto;
+  flex-direction: column;
+}
+.editHistory > div {
+  display: flex;
+}
 @media only screen and (max-width: 800px) {
   .mainDiv {
     display: flex;

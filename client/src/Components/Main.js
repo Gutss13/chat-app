@@ -511,7 +511,6 @@ function Main(props) {
     }
   };
   const handleEditClick = () => {
-    console.log(msgEdit.editMsgNode.parentNode.parentNode.parentNode);
     if (textInput.current.value !== msgEdit.editMsgData.chatData) {
       const historyMessateId = uuidv4();
       msgEdit.editMsgNode.parentNode.parentNode.parentNode.parentNode.previousSibling.style.paddingRight =

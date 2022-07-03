@@ -4,6 +4,10 @@ import ws from './socketConfig';
 
 function Chat(props) {
   const [msgId, setMsgId] = useState({ isShow: false, id: '' });
+  const [isShowEditHistory, setIsShowEditHistory] = useState({
+    bool: false,
+    history: '',
+  });
 
   const removeMsg = (target_id) => {
     axios
@@ -77,9 +81,45 @@ function Chat(props) {
       });
     };
   }, [msgId]);
-
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
   return (
     <>
+      {isShowEditHistory.bool && (
+        <div className="editHistory">
+          {isShowEditHistory.history.map((editedText, i) => {
+            const editedTextDate = new Date(editedText.date);
+            const minutes = editedTextDate.getMinutes();
+            return (
+              <div key={i}>
+                <div>
+                  <span>
+                    {editedTextDate.getDate()}{' '}
+                    {`${months[editedTextDate.getMonth()]} `}
+                  </span>
+                  <span>
+                    {editedTextDate.getHours()}:
+                    {minutes > 9 ? minutes : `0${minutes}`}
+                  </span>
+                </div>
+                <div> {editedText.chatData}</div>
+              </div>
+            );
+          })}
+        </div>
+      )}
       {props.chat.map((chatVal, i) => {
         const date = new Date(chatVal.date);
         const months = [
@@ -107,7 +147,7 @@ function Chat(props) {
               }
             >
               <span>
-                {date.getDay()} {`${months[date.getMonth()]} `}
+                {date.getDate()} {`${months[date.getMonth()]} `}
               </span>
               <span>
                 {date.getHours()}:{minutes > 9 ? minutes : `0${minutes}`}
@@ -242,10 +282,18 @@ function Chat(props) {
                       {chatVal.editHistory && chatVal.editHistory.length > 0 && (
                         <div
                           className="isEdited"
-                          le={
+                          onClick={() => {
+                            if (!isShowEditHistory.bool) {
+                              setIsShowEditHistory({
+                                bool: true,
+                                history: chatVal.editHistory,
+                              });
+                            }
+                          }}
+                          style={
                             chatVal.sender_id === localStorage.id
                               ? { paddingLeft: '15px' }
-                              : { paddingRight: '15pxs' }
+                              : { paddingRight: '15px' }
                           }
                         >
                           Edited
@@ -255,7 +303,7 @@ function Chat(props) {
                         style={
                           chatVal.sender_id === localStorage.id
                             ? { paddingLeft: '15px' }
-                            : { paddingRight: '15pxs' }
+                            : { paddingRight: '15px' }
                         }
                         tabIndex="0"
                       >
@@ -268,10 +316,18 @@ function Chat(props) {
                     {chatVal.editHistory && chatVal.editHistory.length > 0 && (
                       <div
                         className="isEdited"
-                        le={
+                        onClick={(e) => {
+                          if (!isShowEditHistory.bool) {
+                            setIsShowEditHistory({
+                              bool: true,
+                              history: chatVal.editHistory,
+                            });
+                          }
+                        }}
+                        style={
                           chatVal.sender_id === localStorage.id
                             ? { paddingLeft: '15px' }
-                            : { paddingRight: '15pxs' }
+                            : { paddingRight: '15px' }
                         }
                       >
                         Edited
@@ -281,7 +337,7 @@ function Chat(props) {
                       style={
                         chatVal.sender_id === localStorage.id
                           ? { paddingLeft: '15px' }
-                          : { paddingRight: '15pxs' }
+                          : { paddingRight: '15px' }
                       }
                       tabIndex="0"
                     >
