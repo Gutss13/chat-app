@@ -245,12 +245,16 @@ textarea {
   position: absolute;
   left: -70px;
 }
-.myMsgOpts > div:first-child {
+.myMsgRemove {
   background-color: rgb(168, 14, 14);
   color: white;
 }
-.myMsgOpts > div:last-child {
+.myMsgReply {
   background-color: green;
+  color: white;
+}
+.myMsgEdit {
+  background-color: rgb(94, 94, 94);
   color: white;
 }
 .replyMsg {
@@ -283,6 +287,10 @@ textarea {
 }
 .isRemoved {
   font-style: italic;
+}
+.isEdited {
+  font-style: italic;
+  display: inline-block;
 }
 .notificationOuterDiv {
   display: inline-block;
@@ -534,6 +542,29 @@ input[value*='Requests'] {
 }
 .close:after {
   transform: rotate(-45deg);
+}
+.edit {
+  right: 0px;
+  left: auto;
+  top: -1px;
+}
+.edit:before,
+.edit:after {
+  height: 20px;
+  width: 3px;
+}
+.edit:hover::before,
+.edit:hover::after {
+  height: 20px;
+  width: 3px;
+}
+
+.closeEdit {
+  color: rgb(43, 255, 255);
+  position: absolute;
+  left: -70px;
+  top: 10px;
+  cursor: pointer;
 }
 @media only screen and (max-width: 800px) {
   .mainDiv {

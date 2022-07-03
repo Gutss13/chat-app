@@ -32,6 +32,7 @@ function Main(props) {
     length: 0,
     current: 0,
   });
+  const [msgEdit, setMsgEdit] = useState();
   const textInput = useRef(null);
   const chatSearchInput = useRef(null);
 
@@ -509,6 +510,54 @@ function Main(props) {
       }
     }
   };
+  const handleEditClick = () => {
+    console.log(msgEdit.editMsgNode.parentNode.parentNode.parentNode);
+    if (textInput.current.value !== msgEdit.editMsgData.chatData) {
+      const historyMessateId = uuidv4();
+      msgEdit.editMsgNode.parentNode.parentNode.parentNode.parentNode.previousSibling.style.paddingRight =
+        '0px';
+      msgEdit.editMsgNode.parentNode.parentNode.parentNode.style.right = '0px';
+      msgEdit.editMsgNode.parentNode.parentNode.parentNode.style.borderBottom =
+        'none';
+      axios
+        .patch(
+          `/api/chat/msg/edit/${receiver.id}/${localStorage.id}/${msgEdit.editMsgData.id}`,
+          {
+            oldMessage: {
+              chatData: msgEdit.editMsgData.chatData,
+              id: msgEdit.editMsgData.id,
+              date: msgEdit.editMsgData.date,
+            },
+            newMessage: {
+              chatData: textInput.current.value,
+              id: historyMessateId,
+              date: new Date().toJSON(),
+            },
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        )
+        .then((request) => {
+          return request.data;
+        })
+        .then((data) => {
+          ws.send(
+            JSON.stringify({
+              instructions: {
+                instruction: ['refreshChat'],
+                msgSender: localStorage.id,
+              },
+            })
+          );
+          setChat(data);
+          setMsgEdit(null);
+        });
+      document.getElementById('textareaId').value = '';
+    }
+  };
   return (
     <div className="mainDiv">
       <div>
@@ -714,6 +763,9 @@ function Main(props) {
               setChat={setChat}
               receiver={receiver}
               setReplyTo={setReplyTo}
+              setMsgEdit={setMsgEdit}
+              msgEdit={msgEdit}
+              textInput={textInput}
             />
           ) : (
             <div className="emptyChat">Click on Friend to Start Chatting</div>
@@ -727,7 +779,20 @@ function Main(props) {
                   autoFocus
                   id="textareaId"
                   onChange={(e) => {
-                    handleChangeTyping(e);
+                    if (msgEdit) {
+                      msgEdit.editMsgNode.textContent = textInput.current.value;
+                      if (
+                        textInput.current.value === msgEdit.editMsgData.chatData
+                      ) {
+                        msgEdit.editMsgNode.parentNode.parentNode.parentNode.style.borderBottom =
+                          '5px solid red';
+                      } else {
+                        msgEdit.editMsgNode.parentNode.parentNode.parentNode.style.borderBottom =
+                          'none';
+                      }
+                    } else {
+                      handleChangeTyping(e);
+                    }
                   }}
                   onFocus={() => {
                     if (
@@ -759,7 +824,22 @@ function Main(props) {
                         e.key === 'Enter'
                       ) {
                         e.preventDefault();
-                        handleSendClick();
+                        if (!msgEdit) {
+                          handleSendClick();
+                        } else {
+                          handleEditClick();
+                        }
+                      } else if (e.key === 'Escape' && msgEdit) {
+                        msgEdit.editMsgNode.textContent =
+                          msgEdit.editMsgData.chatData;
+                        setMsgEdit(null);
+                        msgEdit.editMsgNode.parentNode.parentNode.parentNode.parentNode.previousSibling.style.paddingRight =
+                          '0px';
+                        msgEdit.editMsgNode.parentNode.parentNode.parentNode.style.right =
+                          '0px';
+                        msgEdit.editMsgNode.parentNode.parentNode.parentNode.style.borderBottom =
+                          'none';
+                        document.getElementById('textareaId').value = '';
                       }
                     }
                   }}
@@ -769,10 +849,14 @@ function Main(props) {
               <div>
                 <input
                   type="button"
-                  value="Send"
+                  value={msgEdit ? 'Edit' : 'Send'}
                   onClick={(e) => {
                     e.preventDefault();
-                    handleSendClick();
+                    if (!msgEdit) {
+                      handleSendClick();
+                    } else {
+                      handleEditClick();
+                    }
                   }}
                 />
               </div>

@@ -129,7 +129,7 @@ function AddFriend(props) {
           JSON.stringify({
             instructions: {
               instruction: ['refreshRequests'],
-              me: localStorage.id,
+              sender: localStorage.id,
             },
           })
         );

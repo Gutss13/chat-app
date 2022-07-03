@@ -164,6 +164,41 @@ router.patch(
   }
 );
 router.patch(
+  '/chat/msg/edit/:receiver_id/:sender_id/:target_id',
+  async (req, res) => {
+    try {
+      const message = await Chat.findOne({ id: req.params.target_id });
+      if (message.editHistory.length > 0) {
+        message.chatData = req.body.newMessage.chatData;
+        message.editHistory = [...message.editHistory, req.body.newMessage];
+      } else {
+        message.chatData = req.body.newMessage.chatData;
+        message.editHistory = [req.body.oldMessage, req.body.newMessage];
+      }
+      await Chat.findOneAndUpdate({ id: req.params.target_id }, message);
+      const chat = await Chat.find({
+        $and: [
+          {
+            $or: [
+              { receiver_id: req.params.receiver_id },
+              { receiver_id: req.params.sender_id },
+            ],
+          },
+          {
+            $or: [
+              { sender_id: req.params.receiver_id },
+              { sender_id: req.params.sender_id },
+            ],
+          },
+        ],
+      }).sort({ date: -1 });
+      res.status(201).json(chat);
+    } catch (err) {
+      res.status(400).json({ message: err.message });
+    }
+  }
+);
+router.patch(
   `/notifications/:receiver_id/:sender_id/:operation`,
   async (req, res) => {
     try {

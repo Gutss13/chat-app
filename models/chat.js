@@ -24,6 +24,9 @@ const chatSchema = new mongoose.Schema({
   },
   isRemoved: { type: Boolean },
   replyTo: { type: Object },
+  editHistory: {
+    type: Array,
+  },
 });
 
 module.exports = mongoose.model('ChatHistory', chatSchema);
