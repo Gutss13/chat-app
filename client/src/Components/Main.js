@@ -650,85 +650,6 @@ function Main(props) {
           )}
         </div>
         <div className="chat">
-          {!!searchResultsNodelist.length && (
-            <div className="arrowContainer">
-              <div
-                className="arrow up"
-                onClick={() => {
-                  if (
-                    searchResultsIndex.current === searchResultsIndex.length
-                  ) {
-                    searchResultsNodelist[0].scrollIntoView({
-                      behavior: 'smooth',
-                      block: 'center',
-                    });
-                    searchResultsNodelist[0].focus({
-                      preventScroll: true,
-                    });
-                    setSearchResultsIndex({
-                      length: searchResultsIndex.length,
-                      current: 0,
-                    });
-                  } else {
-                    searchResultsNodelist[
-                      searchResultsIndex.current + 1
-                    ].scrollIntoView({
-                      behavior: 'smooth',
-                      block: 'center',
-                    });
-                    searchResultsNodelist[searchResultsIndex.current + 1].focus(
-                      {
-                        preventScroll: true,
-                      }
-                    );
-                    setSearchResultsIndex({
-                      length: searchResultsIndex.length,
-                      current: searchResultsIndex.current + 1,
-                    });
-                  }
-                }}
-              ></div>
-              <div className="chatSearchIndex">
-                {searchResultsIndex.current + 1}/{searchResultsIndex.length + 1}
-              </div>
-              <div
-                className="arrow down"
-                onClick={() => {
-                  if (searchResultsIndex.current === 0) {
-                    searchResultsNodelist[
-                      searchResultsIndex.length
-                    ].scrollIntoView({
-                      behavior: 'smooth',
-                      block: 'center',
-                    });
-                    searchResultsNodelist[searchResultsIndex.length].focus({
-                      preventScroll: true,
-                    });
-                    setSearchResultsIndex({
-                      length: searchResultsIndex.length,
-                      current: searchResultsIndex.length,
-                    });
-                  } else {
-                    searchResultsNodelist[
-                      searchResultsIndex.current - 1
-                    ].scrollIntoView({
-                      behavior: 'smooth',
-                      block: 'center',
-                    });
-                    searchResultsNodelist[searchResultsIndex.current - 1].focus(
-                      {
-                        preventScroll: true,
-                      }
-                    );
-                    setSearchResultsIndex({
-                      length: searchResultsIndex.length,
-                      current: searchResultsIndex.current - 1,
-                    });
-                  }
-                }}
-              ></div>
-            </div>
-          )}
           {replyTo && (
             <div className="replyDiv">
               <div
@@ -856,6 +777,79 @@ function Main(props) {
                 />
               </div>
             </div>
+          </div>
+        )}
+        {!!searchResultsNodelist.length && (
+          <div className="arrowContainer">
+            <div
+              className="arrow up"
+              onClick={() => {
+                if (searchResultsIndex.current === searchResultsIndex.length) {
+                  searchResultsNodelist[0].scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                  });
+                  searchResultsNodelist[0].focus({
+                    preventScroll: true,
+                  });
+                  setSearchResultsIndex({
+                    length: searchResultsIndex.length,
+                    current: 0,
+                  });
+                } else {
+                  searchResultsNodelist[
+                    searchResultsIndex.current + 1
+                  ].scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                  });
+                  searchResultsNodelist[searchResultsIndex.current + 1].focus({
+                    preventScroll: true,
+                  });
+                  setSearchResultsIndex({
+                    length: searchResultsIndex.length,
+                    current: searchResultsIndex.current + 1,
+                  });
+                }
+              }}
+            ></div>
+            <div className="chatSearchIndex">
+              {searchResultsIndex.current + 1}/{searchResultsIndex.length + 1}
+            </div>
+            <div
+              className="arrow down"
+              onClick={() => {
+                if (searchResultsIndex.current === 0) {
+                  searchResultsNodelist[
+                    searchResultsIndex.length
+                  ].scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                  });
+                  searchResultsNodelist[searchResultsIndex.length].focus({
+                    preventScroll: true,
+                  });
+                  setSearchResultsIndex({
+                    length: searchResultsIndex.length,
+                    current: searchResultsIndex.length,
+                  });
+                } else {
+                  searchResultsNodelist[
+                    searchResultsIndex.current - 1
+                  ].scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                  });
+                  searchResultsNodelist[searchResultsIndex.current - 1].focus({
+                    preventScroll: true,
+                  });
+                  setSearchResultsIndex({
+                    length: searchResultsIndex.length,
+                    current: searchResultsIndex.current - 1,
+                  });
+                }
+              }}
+            ></div>
           </div>
         )}
       </div>

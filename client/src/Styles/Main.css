@@ -475,8 +475,10 @@ input[value*='Requests'] {
   transition: border-width 150ms ease-in-out;
 }
 .arrowContainer {
-  position: sticky;
+  position: absolute;
+  z-index: 1;
   height: 100%;
+  left: 50%;
   bottom: 50%;
 }
 .arrow:hover {
@@ -562,7 +564,6 @@ input[value*='Requests'] {
     padding: 0px;
   }
   .chatDiv > div {
-    position: relative;
     margin: 0px 5px;
   }
   .chatDiv > div:first-child {
@@ -601,11 +602,6 @@ input[value*='Requests'] {
     width: 30%;
     margin-right: 0px;
     margin-left: auto;
-  }
-  .arrowContainer {
-    position: sticky !important;
-    left: 50%;
-    bottom: 50%;
   }
 }
 @media only screen and (min-width: 801px) {
