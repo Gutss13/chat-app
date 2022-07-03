@@ -4,10 +4,6 @@ import ws from './socketConfig';
 
 function Chat(props) {
   const [msgId, setMsgId] = useState({ isShow: false, id: '' });
-  const [isShowEditHistory, setIsShowEditHistory] = useState({
-    bool: false,
-    history: '',
-  });
 
   const removeMsg = (target_id) => {
     axios
@@ -42,6 +38,16 @@ function Chat(props) {
       id: targetMsg.id,
       isRemoved: targetMsg.isRemoved,
     });
+    document.getElementById('textareaId').focus();
+    if (props.msgEdit) {
+      props.msgEdit.editMsgNode.parentNode.parentNode.parentNode.parentNode.previousSibling.style.paddingRight =
+        '0px';
+      props.msgEdit.editMsgNode.parentNode.parentNode.parentNode.style.right =
+        '0px';
+      props.msgEdit.editMsgNode.parentNode.parentNode.parentNode.style.borderBottom =
+        'none';
+      props.setMsgEdit(null);
+    }
   };
 
   const editMsg = (e, targetMsg) => {
@@ -62,8 +68,7 @@ function Chat(props) {
     e.style.right = '40px';
     e.style.borderBottom = '5px solid red';
     props.textInput.current.value = e.lastChild.lastChild.lastChild.textContent;
-
-    // CONDITIONALLY ADD EDITED TEXT AND BUTTON AFTER CHANGING EDITS SECTION IN DATABASE
+    if (props.replyTo) props.setReplyTo(null);
   };
 
   useEffect(() => {
@@ -97,29 +102,6 @@ function Chat(props) {
   ];
   return (
     <>
-      {isShowEditHistory.bool && (
-        <div className="editHistory">
-          {isShowEditHistory.history.map((editedText, i) => {
-            const editedTextDate = new Date(editedText.date);
-            const minutes = editedTextDate.getMinutes();
-            return (
-              <div key={i}>
-                <div>
-                  <span>
-                    {editedTextDate.getDate()}{' '}
-                    {`${months[editedTextDate.getMonth()]} `}
-                  </span>
-                  <span>
-                    {editedTextDate.getHours()}:
-                    {minutes > 9 ? minutes : `0${minutes}`}
-                  </span>
-                </div>
-                <div> {editedText.chatData}</div>
-              </div>
-            );
-          })}
-        </div>
-      )}
       {props.chat.map((chatVal, i) => {
         const date = new Date(chatVal.date);
         const months = [
@@ -137,6 +119,15 @@ function Chat(props) {
           'Dec',
         ];
         const minutes = date.getMinutes();
+        let editedTextDate;
+        if (
+          chatVal.editHistory &&
+          chatVal.editHistory[chatVal.editHistory.length - 1]
+        ) {
+          editedTextDate = new Date(
+            chatVal.editHistory[chatVal.editHistory.length - 1].date
+          );
+        }
         return (
           <div key={i}>
             <div
@@ -282,14 +273,6 @@ function Chat(props) {
                       {chatVal.editHistory && chatVal.editHistory.length > 0 && (
                         <div
                           className="isEdited"
-                          onClick={() => {
-                            if (!isShowEditHistory.bool) {
-                              setIsShowEditHistory({
-                                bool: true,
-                                history: chatVal.editHistory,
-                              });
-                            }
-                          }}
                           style={
                             chatVal.sender_id === localStorage.id
                               ? { paddingLeft: '15px' }
@@ -297,6 +280,20 @@ function Chat(props) {
                           }
                         >
                           Edited
+                          {editedTextDate && (
+                            <div className="editTimeDiv">
+                              <span>
+                                {editedTextDate.getDate()}{' '}
+                                {`${months[editedTextDate.getMonth()]} `}
+                              </span>
+                              <span>
+                                {editedTextDate.getHours()}:
+                                {editedTextDate.getMinutes() > 9
+                                  ? editedTextDate.getMinutes()
+                                  : `0${editedTextDate.getMinutes()}`}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       )}
                       <div
@@ -316,14 +313,6 @@ function Chat(props) {
                     {chatVal.editHistory && chatVal.editHistory.length > 0 && (
                       <div
                         className="isEdited"
-                        onClick={(e) => {
-                          if (!isShowEditHistory.bool) {
-                            setIsShowEditHistory({
-                              bool: true,
-                              history: chatVal.editHistory,
-                            });
-                          }
-                        }}
                         style={
                           chatVal.sender_id === localStorage.id
                             ? { paddingLeft: '15px' }
@@ -331,6 +320,20 @@ function Chat(props) {
                         }
                       >
                         Edited
+                        {editedTextDate && (
+                          <div className="editTimeDiv">
+                            <span>
+                              {editedTextDate.getDate()}{' '}
+                              {`${months[editedTextDate.getMonth()]} `}
+                            </span>
+                            <span>
+                              {editedTextDate.getHours()}:
+                              {editedTextDate.getMinutes() > 9
+                                ? editedTextDate.getMinutes()
+                                : `0${editedTextDate.getMinutes()}`}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     )}
                     <div

@@ -761,6 +761,7 @@ function Main(props) {
               chat={chat}
               setChat={setChat}
               receiver={receiver}
+              replyTo={replyTo}
               setReplyTo={setReplyTo}
               setMsgEdit={setMsgEdit}
               msgEdit={msgEdit}
@@ -828,17 +829,21 @@ function Main(props) {
                         } else {
                           handleEditClick();
                         }
-                      } else if (e.key === 'Escape' && msgEdit) {
-                        msgEdit.editMsgNode.textContent =
-                          msgEdit.editMsgData.chatData;
-                        setMsgEdit(null);
-                        msgEdit.editMsgNode.parentNode.parentNode.parentNode.parentNode.previousSibling.style.paddingRight =
-                          '0px';
-                        msgEdit.editMsgNode.parentNode.parentNode.parentNode.style.right =
-                          '0px';
-                        msgEdit.editMsgNode.parentNode.parentNode.parentNode.style.borderBottom =
-                          'none';
-                        document.getElementById('textareaId').value = '';
+                      } else if (e.key === 'Escape') {
+                        if (msgEdit) {
+                          msgEdit.editMsgNode.textContent =
+                            msgEdit.editMsgData.chatData;
+                          setMsgEdit(null);
+                          msgEdit.editMsgNode.parentNode.parentNode.parentNode.parentNode.previousSibling.style.paddingRight =
+                            '0px';
+                          msgEdit.editMsgNode.parentNode.parentNode.parentNode.style.right =
+                            '0px';
+                          msgEdit.editMsgNode.parentNode.parentNode.parentNode.style.borderBottom =
+                            'none';
+                          document.getElementById('textareaId').value = '';
+                        } else if (replyTo) {
+                          setReplyTo(null);
+                        }
                       }
                     }
                   }}

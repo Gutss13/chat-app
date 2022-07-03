@@ -149,7 +149,6 @@ textarea {
 .chatText {
   display: grid;
   position: relative;
-  width: 65%;
   min-height: 2em;
   word-break: break-word;
   margin-top: 5px;
@@ -566,14 +565,15 @@ input[value*='Requests'] {
   top: 10px;
   cursor: pointer;
 }
-.editedMessageFlex {
-  display: flex;
-  flex-flow: wrap;
+.editTimeDiv {
+  font-size: smaller;
+  padding-left: 5px;
+  display: inline-block;
 }
 .editedMessageFlex > div:first-child {
-  min-width: max-content;
-  cursor: pointer;
   color: rgb(66, 76, 85);
+}
+.isEdited {
 }
 .editedMessageFlex > div:only-child {
   min-width: auto;
