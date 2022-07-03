@@ -478,7 +478,7 @@ input[value*='Requests'] {
   position: sticky;
   height: 100%;
   left: 50%;
-  bottom: 50%;
+  bottom: 50% !important;
 }
 .arrow:hover {
   border-color: cyan;
