@@ -1,6 +1,4 @@
-// Add later
-// const HOST = window.location.origin.replace(/^http/, 'ws');
-const HOST = 'ws://localhost:3000/';
+const HOST = window.location.origin.replace(/^http/, 'ws');
 const ws = new WebSocket(HOST);
 
 export default ws;
