@@ -476,6 +476,7 @@ input[value*='Requests'] {
 }
 .arrowContainer {
   position: sticky;
+  height: 100%;
   bottom: 50%;
 }
 .arrow:hover {
@@ -485,14 +486,16 @@ input[value*='Requests'] {
 }
 .up {
   cursor: pointer;
-  position: relative;
+  position: absolute;
   bottom: 45px;
+  left: 50%;
 }
 .down {
   cursor: pointer;
   transform: rotate(45deg);
-  position: relative;
+  position: absolute;
   bottom: -45px;
+  left: 50%;
 }
 .chatSearchIndex {
   position: absolute;
@@ -600,8 +603,7 @@ input[value*='Requests'] {
     margin-left: auto;
   }
   .arrowContainer {
-    position: sticky;
-    height: 100%;
+    position: sticky !important;
     left: 50%;
     bottom: 50%;
   }
