@@ -475,7 +475,7 @@ input[value*='Requests'] {
   transition: border-width 150ms ease-in-out;
 }
 .arrowContainer {
-  position: absolute;
+  position: sticky;
   height: 100%;
   left: 50%;
   bottom: 50%;
@@ -603,7 +603,7 @@ input[value*='Requests'] {
     margin-left: auto;
   }
 }
-@media only screen and (min-width: 1201px) {
+@media only screen and (min-width: 801px) {
   .chatText {
     width: 35%;
   }
