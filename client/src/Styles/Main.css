@@ -478,7 +478,7 @@ input[value*='Requests'] {
   position: sticky;
   height: 100%;
   left: 50%;
-  bottom: 50% !important;
+  bottom: 50%;
 }
 .arrow:hover {
   border-color: cyan;
@@ -601,6 +601,12 @@ input[value*='Requests'] {
     width: 30%;
     margin-right: 0px;
     margin-left: auto;
+  }
+  .arrowContainer {
+    position: sticky;
+    height: 100%;
+    left: 50%;
+    bottom: 50%;
   }
 }
 @media only screen and (min-width: 801px) {
