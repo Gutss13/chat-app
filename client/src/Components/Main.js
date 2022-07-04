@@ -84,43 +84,42 @@ function Main(props) {
   }, [friends]);
 
   useEffect(() => {
-    const setStatusOnline = () => {
-      axios
-        .get(`/api/people/personbyid/${localStorage.id}`)
-        .then((request) => {
-          return request.data;
-        })
-        .then((data) => {
-          if (data && data[0]) {
-            setFriends([...data[0].friendList.friends]);
-            setCurrUser(data[0]);
-          }
-        });
-      axios
-        .patch(
-          `/api/people/${localStorage.id}/${localStorage.id}/${null}`,
-          {
-            isOnline: true,
+    axios
+      .get(`/api/people/personbyid/${localStorage.id}`)
+      .then((request) => {
+        return request.data;
+      })
+      .then((data) => {
+        if (data && data[0]) {
+          setFriends([...data[0].friendList.friends]);
+          setCurrUser(data[0]);
+        }
+      });
+    axios
+      .patch(
+        `/api/people/${localStorage.id}/${localStorage.id}/${null}`,
+        {
+          isOnline: true,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
           },
-          {
-            headers: {
-              'Content-Type': 'application/json',
+        }
+      )
+      .then(() => {
+        ws.send(
+          JSON.stringify({
+            instructions: {
+              instruction: ['refreshFriends', 'refreshPeople'],
+              me: localStorage.id,
             },
-          }
-        )
-        .then(() => {
-          ws.send(
-            JSON.stringify({
-              instructions: {
-                instruction: ['refreshFriends', 'refreshPeople'],
-                me: localStorage.id,
-              },
-            })
-          );
-        });
+          })
+        );
+      });
 
-      props.setIsLoggedIn(true);
-    };
+    props.setIsLoggedIn(true);
+
     const setStatusOffline = () => {
       ws.send(
         JSON.stringify({
@@ -132,11 +131,9 @@ function Main(props) {
         })
       );
     };
-    window.addEventListener('load', setStatusOnline);
     window.addEventListener('beforeunload', setStatusOffline);
     window.addEventListener('unload', setStatusOffline);
     return () => {
-      window.addEventListener('load', setStatusOnline);
       window.removeEventListener('beforeunload', setStatusOffline);
       window.removeEventListener('unload', setStatusOffline);
     };
