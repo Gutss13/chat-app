@@ -121,8 +121,8 @@ function Main(props) {
 
     props.setIsLoggedIn(true);
 
-    window.addEventListener('beforeunload', () => {
-      fetch(
+    const setStatusOffline = async () => {
+      await fetch(
         `${window.location.origin}/api/people/${localStorage.id}/${
           localStorage.id
         }/${null}`,
@@ -146,33 +146,19 @@ function Main(props) {
           })
         );
       });
+    };
+    window.addEventListener('beforeunload', () => {
+      setStatusOffline();
+    });
+    window.addEventListener('unload', () => {
+      setStatusOffline();
     });
     return () => {
       window.removeEventListener('beforeunload', () => {
-        fetch(
-          `${window.location.origin}/api/people/${localStorage.id}/${
-            localStorage.id
-          }/${null}`,
-          {
-            method: 'PATCH',
-            body: JSON.stringify({
-              isOnline: false,
-            }),
-            keepalive: true,
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        ).then(() => {
-          ws.send(
-            JSON.stringify({
-              instructions: {
-                instruction: ['refreshFriends', 'refreshPeople'],
-                me: localStorage.id,
-              },
-            })
-          );
-        });
+        setStatusOffline();
+      });
+      window.removeEventListener('unload', () => {
+        setStatusOffline();
       });
     };
   }, []);
