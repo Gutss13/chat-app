@@ -24,7 +24,7 @@ function AddFriend(props) {
     const updatePeople = (e) => {
       const newData = JSON.parse(e.data);
       if (
-        (newData.instruction.includes === 'refreshPeople' ||
+        (newData.instruction === 'refreshPeople' ||
           newData.instruction === 'refreshRequests') &&
         newData.me !== localStorage.id
       ) {
