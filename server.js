@@ -41,7 +41,6 @@ wss.on('connection', (ws) => {
   ws.on('message', (e) => {
     const newData = JSON.parse(`${e}`);
     wss.clients.forEach((client) => {
-      z;
       if ('instructions' in newData) {
         if (Array.isArray(newData.instructions)) {
           if (newData.instructions[0].isTypingTarget) {
@@ -62,25 +61,25 @@ wss.on('connection', (ws) => {
             );
           }
         }
-        if (newData.instructions.searchText) {
-          const id = newData.instructions.searchText.id;
-          const searchText = newData.instructions.searchText.searchText;
+        // if (newData.instructions.searchText) {
+        //   const id = newData.instructions.searchText.id;
+        //   const searchText = newData.instructions.searchText.searchText;
 
-          const url = newData.instructions.searchText.url;
-          if (id) {
-            axios.patch(
-              `${url}/api/people/${id}/${id}/${searchText}`,
-              {
-                isOnline: false,
-              },
-              {
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-              }
-            );
-          }
-        }
+        //   const url = newData.instructions.searchText.url;
+        //   if (id) {
+        //     axios.patch(
+        //       `${url}/api/people/${id}/${id}/${searchText}`,
+        //       {
+        //         isOnline: false,
+        //       },
+        //       {
+        //         headers: {
+        //           'Content-Type': 'application/json',
+        //         },
+        //       }
+        //     );
+        //   }
+        // }
         if (newData.instructions.instruction) {
           if (newData.instructions.instruction.includes('refreshFriends')) {
             client.send(
