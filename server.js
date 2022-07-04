@@ -40,12 +40,11 @@ server.listen(process.env.PORT || 3000, () => console.log(`Server Started`));
 wss.on('connection', (ws) => {
   ws.on('message', (e) => {
     const newData = JSON.parse(`${e}`);
-
+    if (newData.instructions.myId) {
+      ws.myId = newData.instructions.myId;
+      ws.myUrl = newData.instructions.url;
+    }
     wss.clients.forEach((client) => {
-      if (newData.instructions.myId) {
-        client.myId = newData.instructions.myId;
-        client.myUrl = newData.instructions.url;
-      }
       client.addEventListener('close', () => {
         axios
           .patch(
