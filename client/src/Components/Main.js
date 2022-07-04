@@ -138,7 +138,6 @@ function Main(props) {
     window.addEventListener('unload', () => {
       setStatusOffline();
     });
-    ws.addEventListener('close', setStatusOffline);
     return () => {
       window.removeEventListener('beforeunload', () => {
         setStatusOffline();
