@@ -40,24 +40,7 @@ server.listen(process.env.PORT || 3000, () => console.log(`Server Started`));
 wss.on('connection', (ws) => {
   ws.on('message', (e) => {
     const newData = JSON.parse(`${e}`);
-    if (newData.instructions.myId && newData.instructions.url) {
-      ws.myId = newData.instructions.myId;
-      ws.myUrl = newData.instructions.url;
-    }
     wss.clients.forEach((client) => {
-      client.on('close', () => {
-        axios.patch(
-          `${client.myUrl}/api/people/${client.myId}/${client.myId}/${null}`,
-          {
-            isOnline: false,
-          },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-      });
       if ('instructions' in newData) {
         if (Array.isArray(newData.instructions)) {
           if (newData.instructions[0].isTypingTarget) {
@@ -82,7 +65,7 @@ wss.on('connection', (ws) => {
           if (newData.instructions.instruction.includes('refreshFriends')) {
             client.send(
               JSON.stringify({
-                instruction: ['refreshFriends'],
+                instruction: 'refreshFriends',
                 me: newData.instructions.me,
               })
             );
@@ -98,7 +81,7 @@ wss.on('connection', (ws) => {
           if (newData.instructions.instruction.includes('refreshPeople')) {
             client.send(
               JSON.stringify({
-                instruction: ['refreshPeople'],
+                instruction: 'refreshPeople',
                 me: newData.instructions.me,
               })
             );

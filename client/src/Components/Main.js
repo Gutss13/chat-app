@@ -114,8 +114,6 @@ function Main(props) {
             instructions: {
               instruction: ['refreshFriends', 'refreshPeople'],
               me: localStorage.id,
-              myId: localStorage.id,
-              url: window.location.origin,
             },
           })
         );
@@ -126,10 +124,61 @@ function Main(props) {
     window.addEventListener('beforeunload', () => {
       ws.close();
     });
-
+    ws.addEventListener('close', () => {
+      axios
+        .patch(
+          `${window.location.origin}/api/people/${localStorage.id}/${
+            localStorage.id
+          }/${null}`,
+          {
+            isOnline: false,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        )
+        .then(() => {
+          ws.send(
+            JSON.stringify({
+              instructions: {
+                instruction: ['refreshFriends', 'refreshPeople'],
+                me: localStorage.id,
+              },
+            })
+          );
+        });
+    });
     return () => {
       window.removeEventListener('beforeunload', () => {
         ws.close();
+      });
+      ws.removeEventListener('close', () => {
+        axios
+          .patch(
+            `${window.location.origin}/api/people/${localStorage.id}/${
+              localStorage.id
+            }/${null}`,
+            {
+              isOnline: false,
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          )
+          .then(() => {
+            ws.send(
+              JSON.stringify({
+                instructions: {
+                  instruction: ['refreshFriends', 'refreshPeople'],
+                  me: localStorage.id,
+                },
+              })
+            );
+          });
       });
     };
   }, []);
@@ -162,10 +211,10 @@ function Main(props) {
         setReceiver(null);
       }
       if (
-        !newData.instruction.includes('refreshPeople') &&
+        newData.instruction !== 'refreshPeople' &&
         newData.instruction !== 'refreshRequests' &&
         newData.instruction !== 'refreshChat' &&
-        !newData.instruction.includes('refreshFriends')
+        newData.instruction !== 'refreshFriends'
       ) {
         if (receiver) {
           if (
@@ -222,10 +271,10 @@ function Main(props) {
     const updateChatStatusSeen = (e) => {
       const newData = JSON.parse(e.data);
       if (
-        !newData.instruction.includes('refreshPeople') &&
+        newData.instruction !== 'refreshPeople' &&
         newData.instruction !== 'refreshRequests' &&
         newData.instruction !== 'refreshChat' &&
-        !newData.instruction.includes('refreshFriends')
+        newData.instruction !== 'refreshFriends'
       ) {
         if (receiver && chat) {
           if ('isSeenVal' in newData) {

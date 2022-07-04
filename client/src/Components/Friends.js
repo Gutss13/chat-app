@@ -15,7 +15,7 @@ function Friends(props) {
     const updateFriends = (e) => {
       const newData = JSON.parse(e.data);
       if (
-        newData.instruction.includes('refreshFriends') &&
+        newData.instruction === 'refreshFriends' &&
         newData.me !== localStorage.id
       ) {
         axios

@@ -94,8 +94,6 @@ function Register(props) {
               instructions: {
                 instruction: ['refreshPeople'],
                 me: idInput.current.value,
-                myId: idInput.current.value,
-                url: window.location.origin,
               },
             })
           )
