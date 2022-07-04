@@ -40,36 +40,8 @@ server.listen(process.env.PORT || 3000, () => console.log(`Server Started`));
 wss.on('connection', (ws) => {
   ws.on('message', (e) => {
     const newData = JSON.parse(`${e}`);
-    if (newData.instructions.myId) {
-      ws.myId = newData.instructions.myId;
-      ws.myUrl = newData.instructions.url;
-    }
     wss.clients.forEach((client) => {
-      client.addEventListener('close', () => {
-        axios
-          .patch(
-            `${client.myUrl}/api/people/${client.myId}/${client.myId}/${null}`,
-            {
-              isOnline: false,
-            },
-            {
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            }
-          )
-          .then(() => {
-            wss.clients.forEach((remainingClients) => {
-              remainingClients.send(
-                JSON.stringify({
-                  instruction: 'refreshFriends',
-                  me: client.myId,
-                })
-              );
-            });
-          });
-      });
-
+      z;
       if ('instructions' in newData) {
         if (Array.isArray(newData.instructions)) {
           if (newData.instructions[0].isTypingTarget) {
@@ -87,6 +59,25 @@ wss.on('connection', (ws) => {
                 isSeenVal: newData.instructions[0].isSeenVal,
                 msgSender: newData.instructions[0].msgSender,
               })
+            );
+          }
+        }
+        if (newData.instructions.searchText) {
+          const id = newData.instructions.searchText.id;
+          const searchText = newData.instructions.searchText.searchText;
+
+          const url = newData.instructions.searchText.url;
+          if (id) {
+            axios.patch(
+              `${url}/api/people/${id}/${id}/${searchText}`,
+              {
+                isOnline: false,
+              },
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
             );
           }
         }
