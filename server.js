@@ -46,31 +46,28 @@ wss.on('connection', (ws) => {
     }
     wss.clients.forEach((client) => {
       client.addEventListener('close', () => {
-        if (client.readyState === client.CLOSED)
-          axios
-            .patch(
-              `${client.myUrl}/api/people/${client.myId}/${
-                client.myId
-              }/${null}`,
-              {
-                isOnline: false,
+        axios
+          .patch(
+            `${client.myUrl}/api/people/${client.myId}/${client.myId}/${null}`,
+            {
+              isOnline: false,
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json',
               },
-              {
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-              }
-            )
-            .then(() => {
-              wss.clients.forEach((remainingClients) => {
-                remainingClients.send(
-                  JSON.stringify({
-                    instruction: 'refreshFriends',
-                    me: client.myId,
-                  })
-                );
-              });
+            }
+          )
+          .then(() => {
+            wss.clients.forEach((remainingClients) => {
+              remainingClients.send(
+                JSON.stringify({
+                  instruction: 'refreshFriends',
+                  me: client.myId,
+                })
+              );
             });
+          });
       });
 
       if ('instructions' in newData) {
