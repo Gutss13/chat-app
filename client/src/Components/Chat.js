@@ -86,23 +86,10 @@ function Chat(props) {
       });
     };
   }, [msgId]);
-  const months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
+
   return (
     <>
-      {props.chat.map((chatVal, i) => {
+      {props.chat.map((chatVal) => {
         const date = new Date(chatVal.date);
         const months = [
           'Jan',
@@ -129,7 +116,7 @@ function Chat(props) {
           );
         }
         return (
-          <div key={i}>
+          <div key={`messageKey${chatVal.id}`}>
             <div
               className={
                 chatVal.sender_id === localStorage.id

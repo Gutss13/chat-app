@@ -656,8 +656,18 @@ function Main(props) {
       <div className="chatDiv">
         <div>
           {receiver && `To: ${receiver.name}`}
+
           {receiver && (
             <div className="chatSearch">
+              {!!searchResultsNodelist.length && (
+                <div
+                  className="close"
+                  onClick={() => {
+                    setSearchResultsNodelist([]);
+                    setSearchResultsIndex({ length: 0, current: 0 });
+                  }}
+                ></div>
+              )}
               <input
                 type="text"
                 id="chatSearchInputId"
@@ -666,11 +676,7 @@ function Main(props) {
                 ref={chatSearchInput}
                 onKeyDown={(e) => {
                   if (receiver) {
-                    if (
-                      document.activeElement ===
-                        document.getElementById('chatSearchInputId') &&
-                      e.key === 'Enter'
-                    ) {
+                    if (e.key === 'Enter') {
                       handleChatSearchPress(e);
                     }
                   }
@@ -685,15 +691,6 @@ function Main(props) {
               >
                 <img src={search_image} alt="" />
               </button>
-              {!!searchResultsNodelist.length && (
-                <div
-                  className="close"
-                  onClick={() => {
-                    setSearchResultsNodelist([]);
-                    setSearchResultsIndex({ length: 0, current: 0 });
-                  }}
-                ></div>
-              )}
             </div>
           )}
         </div>

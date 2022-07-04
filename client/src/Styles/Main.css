@@ -521,6 +521,9 @@ input[value*='Requests'] {
 }
 .close {
   opacity: 1;
+  position: absolute;
+  left: -10%;
+  top: 5px;
 }
 .close:before,
 .close:after {
@@ -643,6 +646,8 @@ input[value*='Requests'] {
   }
   .chatSearch {
     position: relative;
+
+    width: 40%;
   }
   .chatSearchTerm {
     height: 15px;
@@ -651,15 +656,47 @@ input[value*='Requests'] {
     height: 31px;
   }
   .close {
-    left: 85px;
-    top: 2px;
+    left: -24px;
+    top: 3px;
   }
-  .chatSearchTerm {
-    width: 30%;
-    margin-right: 0px;
-    margin-left: auto;
+  .myMsgOpts .msgOpts {
+    line-height: 16px;
+  }
+  .edit::after,
+  .edit::before {
+    height: 0px;
+    width: 0px;
+  }
+  .closeEdit {
+    left: -50px;
+    top: 5px;
+  }
+  .arrow {
+    width: 15px;
+    height: 15px;
+  }
+  .arrowContainer {
+    position: absolute;
+    top: 0px;
+    bottom: auto;
+  }
+  .up {
+    top: 8px;
+    left: -20px;
+  }
+  .down {
+    top: 22px;
+    left: -20px;
+  }
+  .chatSearchIndex {
+    top: 15px;
+    left: -60px;
+  }
+  .chatDiv > div:first-child {
+    justify-content: space-between;
   }
 }
+
 @media only screen and (min-width: 801px) {
   .chatText {
     width: 35%;
