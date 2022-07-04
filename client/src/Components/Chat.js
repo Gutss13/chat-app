@@ -153,6 +153,7 @@ function Chat(props) {
                         'none';
                       props.msgEdit.editMsgNode.textContent =
                         props.msgEdit.editMsgData.chatData;
+                      props.textInput.current.value = '';
                     }}
                   >
                     <div className="close edit"></div>

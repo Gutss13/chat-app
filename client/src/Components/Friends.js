@@ -162,7 +162,10 @@ function Friends(props) {
       {props.foundFriends && props.friendSearchText
         ? props.foundFriends.map((person, i) => {
             return (
-              <div key={i} className="people friends peopleInnerDiv">
+              <div
+                key={`foundFriendsKey${i}`}
+                className="people friends peopleInnerDiv"
+              >
                 <div>
                   <div className={person.isOnline ? 'online' : 'offline'}></div>
                   <div
@@ -188,7 +191,10 @@ function Friends(props) {
         : props.friendsInfo.length > 0
         ? props.friendsInfo.map((person, i) => {
             return (
-              <div key={i} className="people friends peopleInnerDiv">
+              <div
+                key={`friendsKey${i}`}
+                className="people friends peopleInnerDiv"
+              >
                 <div>
                   <div>
                     <div

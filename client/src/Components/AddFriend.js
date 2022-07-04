@@ -584,7 +584,10 @@ function AddFriend(props) {
             {props.foundPeople && props.searchText
               ? props.foundPeople.map((person, i) => {
                   return (
-                    <div key={i} className="people peopleInnerDiv">
+                    <div
+                      key={`foundPeopleKey${i}`}
+                      className="people peopleInnerDiv"
+                    >
                       <div>
                         <div
                           className={person.isOnline ? 'online' : 'offline'}
@@ -650,7 +653,10 @@ function AddFriend(props) {
               : props.allPeople
               ? props.allPeople.map((person, i) => {
                   return (
-                    <div key={i} className="people peopleInnerDiv">
+                    <div
+                      key={`allPeopleKey${i}`}
+                      className="people peopleInnerDiv"
+                    >
                       <div>
                         <div
                           className={person.isOnline ? 'online' : 'offline'}

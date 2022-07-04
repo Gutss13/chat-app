@@ -274,7 +274,10 @@ function FriendRequests(props) {
       {isRequestsShown && props.incomingRequests.length > 0 ? (
         props.incomingRequests.map((element, i) => {
           return (
-            <div key={i} className="people peopleInnerDiv">
+            <div
+              key={`incomingRequestsKey${i}`}
+              className="people peopleInnerDiv"
+            >
               <div>
                 <div>
                   {element.first_name} {element.last_name}
