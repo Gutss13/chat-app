@@ -122,6 +122,16 @@ function Main(props) {
       });
 
     props.setIsLoggedIn(true);
+
+    window.addEventListener('beforeunload', () => {
+      ws.close();
+    });
+
+    return () => {
+      window.removeEventListener('beforeunload', () => {
+        ws.close();
+      });
+    };
   }, []);
 
   useEffect(() => {
@@ -152,10 +162,10 @@ function Main(props) {
         setReceiver(null);
       }
       if (
-        newData.instruction !== 'refreshPeople' &&
+        !newData.instruction.includes('refreshPeople') &&
         newData.instruction !== 'refreshRequests' &&
         newData.instruction !== 'refreshChat' &&
-        newData.instruction !== 'refreshFriends'
+        !newData.instruction.includes('refreshFriends')
       ) {
         if (receiver) {
           if (
@@ -212,10 +222,10 @@ function Main(props) {
     const updateChatStatusSeen = (e) => {
       const newData = JSON.parse(e.data);
       if (
-        newData.instruction !== 'refreshPeople' &&
+        !newData.instruction.includes('refreshPeople') &&
         newData.instruction !== 'refreshRequests' &&
         newData.instruction !== 'refreshChat' &&
-        newData.instruction !== 'refreshFriends'
+        !newData.instruction.includes('refreshFriends')
       ) {
         if (receiver && chat) {
           if ('isSeenVal' in newData) {
