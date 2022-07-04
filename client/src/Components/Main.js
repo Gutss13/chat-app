@@ -98,7 +98,7 @@ function Main(props) {
 
     axios
       .patch(
-        `/api/people/${localStorage.id}/${localStorage.id}/${searchText}`,
+        `/api/people/${localStorage.id}/${localStorage.id}/${null}`,
         {
           isOnline: true,
         },
