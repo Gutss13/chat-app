@@ -122,16 +122,6 @@ function Main(props) {
       });
 
     props.setIsLoggedIn(true);
-
-    window.addEventListener('beforeunload', () => {
-      ws.close();
-    });
-
-    return () => {
-      window.removeEventListener('beforeunload', () => {
-        ws.close();
-      });
-    };
   }, []);
 
   useEffect(() => {
