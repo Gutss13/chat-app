@@ -122,6 +122,35 @@ function Main(props) {
       });
 
     props.setIsLoggedIn(true);
+
+    window.addEventListener('beforeunload', () => {
+      ws.close();
+    });
+    ws.addEventListener('close', () => {
+      ws.send(
+        JSON.stringify({
+          instructions: {
+            myId: localStorage.id,
+            url: window.location.origin,
+          },
+        })
+      );
+    });
+    return () => {
+      window.removeEventListener('beforeunload', () => {
+        ws.close();
+      });
+      ws.removeEventListener('close', () => {
+        ws.send(
+          JSON.stringify({
+            instructions: {
+              myId: localStorage.id,
+              url: window.location.origin,
+            },
+          })
+        );
+      });
+    };
   }, []);
 
   useEffect(() => {
