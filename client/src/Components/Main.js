@@ -132,10 +132,8 @@ function Main(props) {
       );
     };
     window.addEventListener('beforeunload', setStatusOffline);
-    // window.addEventListener('unload', setStatusOffline);
     return () => {
       window.removeEventListener('beforeunload', setStatusOffline);
-      // window.removeEventListener('unload', setStatusOffline);
     };
   }, []);
 
