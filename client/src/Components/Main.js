@@ -95,28 +95,20 @@ function Main(props) {
           setCurrUser(data[0]);
         }
       });
-    axios
-      .patch(
-        `/api/people/${localStorage.id}/${localStorage.id}/${null}`,
-        {
-          isOnline: true,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
+
+    ws.send(
+      JSON.stringify({
+        instructions: {
+          instruction: ['refreshFriends', 'refreshPeople'],
+          me: localStorage.id,
+          toggleStatus: {
+            status: 'online',
+            id: localStorage.id,
+            url: window.location.origin,
           },
-        }
-      )
-      .then(() => {
-        ws.send(
-          JSON.stringify({
-            instructions: {
-              instruction: ['refreshFriends', 'refreshPeople'],
-              me: localStorage.id,
-            },
-          })
-        );
-      });
+        },
+      })
+    );
 
     props.setIsLoggedIn(true);
 
@@ -126,14 +118,20 @@ function Main(props) {
           instructions: {
             instruction: ['refreshFriends', 'refreshPeople'],
             me: localStorage.id,
-            toggleStatus: { id: localStorage.id, url: window.location.origin },
+            toggleStatus: {
+              status: 'offline',
+              id: localStorage.id,
+              url: window.location.origin,
+            },
           },
         })
       );
     };
     window.addEventListener('beforeunload', setStatusOffline);
+    window.addEventListener('unload', setStatusOffline);
     return () => {
       window.removeEventListener('beforeunload', setStatusOffline);
+      window.removeEventListener('unload', setStatusOffline);
     };
   }, []);
 
@@ -567,28 +565,19 @@ function Main(props) {
             value="Log Out"
             onClick={(e) => {
               e.preventDefault();
-              axios
-                .patch(
-                  `/api/people/${localStorage.id}/${localStorage.id}/${searchText}`,
-                  {
-                    isOnline: false,
-                  },
-                  {
-                    headers: {
-                      'Content-Type': 'application/json',
+              ws.send(
+                JSON.stringify({
+                  instructions: {
+                    instruction: ['refreshFriends', 'refreshPeople'],
+                    me: localStorage.id,
+                    toggleStatus: {
+                      status: 'offline',
+                      id: localStorage.id,
+                      url: window.location.origin,
                     },
-                  }
-                )
-                .then(() => {
-                  ws.send(
-                    JSON.stringify({
-                      instructions: {
-                        instruction: ['refreshFriends', 'refreshPeople'],
-                        me: localStorage.id,
-                      },
-                    })
-                  );
-                });
+                  },
+                })
+              );
               props.setIsLoggedIn(false);
               localStorage.clear();
             }}

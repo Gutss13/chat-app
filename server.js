@@ -64,17 +64,31 @@ wss.on('connection', (ws) => {
         if (newData.instructions.toggleStatus) {
           const id = newData.instructions.toggleStatus.id;
           const url = newData.instructions.toggleStatus.url;
-          axios.patch(
-            `${url}/api/people/${id}/${id}/${null}`,
-            {
-              isOnline: false,
-            },
-            {
-              headers: {
-                'Content-Type': 'application/json',
+          if (newData.instructions.toggleStatus.status === 'offline') {
+            axios.patch(
+              `${url}/api/people/${id}/${id}/${null}`,
+              {
+                isOnline: false,
               },
-            }
-          );
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
+          } else if (newData.instructions.toggleStatus.status === 'online') {
+            axios.patch(
+              `${url}/api/people/${id}/${id}/${null}`,
+              {
+                isOnline: true,
+              },
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
+          }
         }
         if (newData.instructions.instruction) {
           if (newData.instructions.instruction.includes('refreshFriends')) {
