@@ -57,15 +57,6 @@ wss.on('connection', (ws) => {
             },
           }
         );
-        wss.clients.forEach((openClient) => {
-          openClient.send(
-            JSON.stringify({
-              instruction: ['refreshFriends', 'refreshPeople'],
-              me: client.myId,
-            })
-          );
-        });
-        console.log(client.myId);
       });
       if ('instructions' in newData) {
         if (Array.isArray(newData.instructions)) {
