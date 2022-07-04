@@ -122,21 +122,48 @@ function Main(props) {
     props.setIsLoggedIn(true);
 
     window.addEventListener('beforeunload', () => {
-      axios
-        .patch(
+      fetch(
+        `${window.location.origin}/api/people/${localStorage.id}/${
+          localStorage.id
+        }/${null}`,
+        {
+          method: 'PATCH',
+          body: JSON.stringify({
+            isOnline: false,
+          }),
+          keepalive: true,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      ).then(() => {
+        ws.send(
+          JSON.stringify({
+            instructions: {
+              instruction: ['refreshFriends', 'refreshPeople'],
+              me: localStorage.id,
+            },
+          })
+        );
+      });
+    });
+    return () => {
+      window.removeEventListener('beforeunload', () => {
+        fetch(
           `${window.location.origin}/api/people/${localStorage.id}/${
             localStorage.id
           }/${null}`,
           {
-            isOnline: false,
-          },
-          {
+            method: 'PATCH',
+            body: JSON.stringify({
+              isOnline: false,
+            }),
+            keepalive: true,
             headers: {
               'Content-Type': 'application/json',
             },
           }
-        )
-        .then(() => {
+        ).then(() => {
           ws.send(
             JSON.stringify({
               instructions: {
@@ -146,33 +173,6 @@ function Main(props) {
             })
           );
         });
-    });
-    return () => {
-      window.removeEventListener('beforeunload', () => {
-        axios
-          .patch(
-            `${window.location.origin}/api/people/${localStorage.id}/${
-              localStorage.id
-            }/${null}`,
-            {
-              isOnline: false,
-            },
-            {
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            }
-          )
-          .then(() => {
-            ws.send(
-              JSON.stringify({
-                instructions: {
-                  instruction: ['refreshFriends', 'refreshPeople'],
-                  me: localStorage.id,
-                },
-              })
-            );
-          });
       });
     };
   }, []);
