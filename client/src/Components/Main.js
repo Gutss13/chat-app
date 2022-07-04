@@ -114,6 +114,8 @@ function Main(props) {
             instructions: {
               instruction: ['refreshFriends', 'refreshPeople'],
               me: localStorage.id,
+              myId: localStorage.id,
+              url: window.location.origin,
             },
           })
         );
@@ -121,27 +123,14 @@ function Main(props) {
 
     props.setIsLoggedIn(true);
 
-    const updateStatusLogOut = () => {
-      ws.send(
-        JSON.stringify({
-          instructions: {
-            instruction: ['refreshFriends', 'refreshPeople'],
-            me: localStorage.id,
-            searchText: {
-              id: localStorage.id,
-              searchText,
-              url: window.location.origin,
-            },
-          },
-        })
-      );
-    };
+    window.addEventListener('beforeunload', () => {
+      ws.close();
+    });
 
-    window.addEventListener('beforeunload', updateStatusLogOut);
-    ws.addEventListener('close', updateStatusLogOut);
     return () => {
-      window.removeEventListener('beforeunload', updateStatusLogOut);
-      ws.removeEventListener('close', updateStatusLogOut);
+      window.removeEventListener('beforeunload', () => {
+        ws.close();
+      });
     };
   }, []);
 
@@ -413,6 +402,15 @@ function Main(props) {
         return updatedFriend;
       } else {
         return friend;
+      }
+    });
+    friendsInfoCopy.sort((a, b) => {
+      if (a.notifications.number !== 0 && b.notifications.number !== 0) {
+        return b.notifications.date - a.notifications.date;
+      } else if (b.notifications.number !== 0) {
+        return 1;
+      } else {
+        return b.isOnline - a.isOnline;
       }
     });
     setFriendsInfo(friendsInfoCopy);
@@ -741,6 +739,7 @@ function Main(props) {
                         }
                   }
                   onClick={() => {
+                    textInput.current.value = '';
                     setReplyTo(null);
                   }}
                 />
@@ -797,20 +796,23 @@ function Main(props) {
                       chat[0] &&
                       chat[0].sender_id !== localStorage.id
                     ) {
-                      axios.patch(
-                        `/api/notifications/${localStorage.id}/${receiver.id}/onSeen`
-                      );
                       updateFriendsInfo(receiver.id);
-                      ws.send(
-                        JSON.stringify({
-                          instructions: [
-                            {
-                              isSeenVal: true,
-                              msgSender: localStorage.id,
-                            },
-                          ],
-                        })
-                      );
+                      axios
+                        .patch(
+                          `/api/notifications/${localStorage.id}/${receiver.id}/onSeen`
+                        )
+                        .then(() => {
+                          ws.send(
+                            JSON.stringify({
+                              instructions: [
+                                {
+                                  isSeenVal: true,
+                                  msgSender: localStorage.id,
+                                },
+                              ],
+                            })
+                          );
+                        });
                     }
                   }}
                   onKeyDown={(e) => {
@@ -839,6 +841,7 @@ function Main(props) {
                             'none';
                           document.getElementById('textareaId').value = '';
                         } else if (replyTo) {
+                          textInput.current.value = '';
                           setReplyTo(null);
                         }
                       }
