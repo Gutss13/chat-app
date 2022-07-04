@@ -121,27 +121,13 @@ function Main(props) {
 
     props.setIsLoggedIn(true);
 
-    const setStatusOffline = async () => {
-      await fetch(
-        `${window.location.origin}/api/people/${localStorage.id}/${
-          localStorage.id
-        }/${null}`,
-        {
-          method: 'PATCH',
-          body: JSON.stringify({
-            isOnline: false,
-          }),
-          keepalive: true,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+    const setStatusOffline = () => {
       ws.send(
         JSON.stringify({
           instructions: {
             instruction: ['refreshFriends', 'refreshPeople'],
             me: localStorage.id,
+            toggleStatus: { id: localStorage.id, url: window.location.origin },
           },
         })
       );
@@ -152,6 +138,7 @@ function Main(props) {
     window.addEventListener('unload', () => {
       setStatusOffline();
     });
+    ws.addEventListener('close', setStatusOffline);
     return () => {
       window.removeEventListener('beforeunload', () => {
         setStatusOffline();

@@ -41,6 +41,7 @@ wss.on('connection', (ws) => {
   ws.on('message', (e) => {
     const newData = JSON.parse(`${e}`);
     wss.clients.forEach((client) => {
+      Z;
       if ('instructions' in newData) {
         if (Array.isArray(newData.instructions)) {
           if (newData.instructions[0].isTypingTarget) {
@@ -59,6 +60,26 @@ wss.on('connection', (ws) => {
                 msgSender: newData.instructions[0].msgSender,
               })
             );
+          }
+        }
+        if (newData.instructions.toggleStatus) {
+          const id = newData.instructions.toggleStatus.id;
+          const url = newData.instructions.toggleStatus.url;
+          const switchToOffline = async () => {
+            await axios.patch(
+              `${url}/api/people/${id}/${id}/${null}`,
+              {
+                isOnline: false,
+              },
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
+          };
+          if (id) {
+            switchToOffline();
           }
         }
         if (newData.instructions.instruction) {
