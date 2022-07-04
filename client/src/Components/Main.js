@@ -122,9 +122,6 @@ function Main(props) {
     props.setIsLoggedIn(true);
 
     window.addEventListener('beforeunload', () => {
-      ws.close();
-    });
-    ws.addEventListener('close', () => {
       axios
         .patch(
           `${window.location.origin}/api/people/${localStorage.id}/${
@@ -152,9 +149,6 @@ function Main(props) {
     });
     return () => {
       window.removeEventListener('beforeunload', () => {
-        ws.close();
-      });
-      ws.removeEventListener('close', () => {
         axios
           .patch(
             `${window.location.origin}/api/people/${localStorage.id}/${
