@@ -136,16 +136,15 @@ function Main(props) {
             'Content-Type': 'application/json',
           },
         }
-      ).then(() => {
-        ws.send(
-          JSON.stringify({
-            instructions: {
-              instruction: ['refreshFriends', 'refreshPeople'],
-              me: localStorage.id,
-            },
-          })
-        );
-      });
+      );
+      ws.send(
+        JSON.stringify({
+          instructions: {
+            instruction: ['refreshFriends', 'refreshPeople'],
+            me: localStorage.id,
+          },
+        })
+      );
     };
     window.addEventListener('beforeunload', () => {
       setStatusOffline();
