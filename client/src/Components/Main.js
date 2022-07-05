@@ -95,28 +95,30 @@ function Main(props) {
           setCurrUser(data[0]);
         }
       });
-    axios
-      .patch(
-        `/api/people/${localStorage.id}/${localStorage.id}/${null}`,
-        {
-          isOnline: true,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
+    setTimeout(() => {
+      axios
+        .patch(
+          `/api/people/${localStorage.id}/${localStorage.id}/${null}`,
+          {
+            isOnline: true,
           },
-        }
-      )
-      .then(() => {
-        ws.send(
-          JSON.stringify({
-            instructions: {
-              instruction: ['refreshFriends', 'refreshPeople'],
-              me: localStorage.id,
+          {
+            headers: {
+              'Content-Type': 'application/json',
             },
-          })
-        );
-      });
+          }
+        )
+        .then(() => {
+          ws.send(
+            JSON.stringify({
+              instructions: {
+                instruction: ['refreshFriends', 'refreshPeople'],
+                me: localStorage.id,
+              },
+            })
+          );
+        });
+    }, 1000);
 
     props.setIsLoggedIn(true);
 
