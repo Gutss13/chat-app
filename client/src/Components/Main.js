@@ -118,7 +118,7 @@ function Main(props) {
             })
           );
         });
-    }, 1000);
+    }, 100);
 
     props.setIsLoggedIn(true);
 
