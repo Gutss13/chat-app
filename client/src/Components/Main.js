@@ -96,20 +96,23 @@ function Main(props) {
         }
       });
 
-    props.setIsLoggedIn(true);
-    ws.send(
-      JSON.stringify({
-        instructions: {
-          instruction: ['refreshFriends', 'refreshPeople'],
-          me: localStorage.id,
-          toggleStatus: {
-            id: localStorage.id,
-            url: window.location.origin,
-            isOnline: true,
+    setTimeout(() => {
+      ws.send(
+        JSON.stringify({
+          instructions: {
+            instruction: ['refreshFriends', 'refreshPeople'],
+            me: localStorage.id,
+            toggleStatus: {
+              id: localStorage.id,
+              url: window.location.origin,
+              isOnline: true,
+            },
           },
-        },
-      })
-    );
+        })
+      );
+    }, 100);
+
+    props.setIsLoggedIn(true);
 
     const setStatusOffline = () => {
       ws.send(
