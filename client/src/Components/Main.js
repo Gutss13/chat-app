@@ -95,22 +95,30 @@ function Main(props) {
           setCurrUser(data[0]);
         }
       });
-
     setTimeout(() => {
-      ws.send(
-        JSON.stringify({
-          instructions: {
-            instruction: ['refreshFriends', 'refreshPeople'],
-            me: localStorage.id,
-            toggleStatus: {
-              id: localStorage.id,
-              url: window.location.origin,
-              isOnline: true,
-            },
+      axios
+        .patch(
+          `/api/people/${localStorage.id}/${localStorage.id}/${null}`,
+          {
+            isOnline: true,
           },
-        })
-      );
-    }, 100);
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        )
+        .then(() => {
+          ws.send(
+            JSON.stringify({
+              instructions: {
+                instruction: ['refreshFriends', 'refreshPeople'],
+                me: localStorage.id,
+              },
+            })
+          );
+        });
+    }, 500);
 
     props.setIsLoggedIn(true);
 
@@ -123,7 +131,7 @@ function Main(props) {
             toggleStatus: {
               id: localStorage.id,
               url: window.location.origin,
-              isOnline: false,
+              status: 'offline',
             },
           },
         })

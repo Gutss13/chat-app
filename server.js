@@ -64,11 +64,10 @@ wss.on('connection', (ws) => {
         if (newData.instructions.toggleStatus) {
           const id = newData.instructions.toggleStatus.id;
           const url = newData.instructions.toggleStatus.url;
-          const onlineStatus = newData.instructions.toggleStatus.status;
           axios.patch(
             `${url}/api/people/${id}/${id}/${null}`,
             {
-              isOnline: onlineStatus,
+              isOnline: false,
             },
             {
               headers: {
