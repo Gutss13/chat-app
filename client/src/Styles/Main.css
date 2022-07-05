@@ -576,8 +576,6 @@ input[value*='Requests'] {
 .editedMessageFlex > div:first-child {
   color: rgb(66, 76, 85);
 }
-.isEdited {
-}
 .editedMessageFlex > div:only-child {
   min-width: auto;
   cursor: auto;

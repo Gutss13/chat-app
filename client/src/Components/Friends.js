@@ -35,6 +35,53 @@ function Friends(props) {
     return () => ws.removeEventListener('message', updateFriends);
   }, []);
 
+  useEffect(() => {
+    if (props.currUser && props.friends.length > 0) {
+      const friendsPromises = props.friends.map(async (friend) => {
+        let friendData = await axios
+          .get(`/api/people/personbyid/${friend}`)
+          .then((request) => {
+            return request.data;
+          })
+          .then((data) => {
+            if (
+              props.currUser.notifications &&
+              data[0].id in props.currUser.notifications
+            ) {
+              return {
+                ...data[0],
+                notifications: {
+                  number: props.currUser.notifications[data[0].id].number,
+                  date: props.currUser.notifications[data[0].id].date,
+                },
+              };
+            } else {
+              return {
+                ...data[0],
+                notifications: { number: 0 },
+              };
+            }
+          });
+        return friendData;
+      });
+      Promise.all(friendsPromises).then((friendsArr) => {
+        const friendsInfoCopy = friendsArr;
+        friendsInfoCopy.sort((a, b) => {
+          if (a.notifications.number !== 0 && b.notifications.number !== 0) {
+            return b.notifications.date - a.notifications.date;
+          } else if (b.notifications.number !== 0) {
+            return 1;
+          } else {
+            return b.isOnline - a.isOnline;
+          }
+        });
+        props.setFriendsInfo([...friendsInfoCopy]);
+      });
+    } else {
+      props.setFriendsInfo([]);
+    }
+  }, [props.friends]);
+
   const handleClick = (e) => {
     e.preventDefault();
     axios

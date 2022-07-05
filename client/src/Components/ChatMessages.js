@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import ws from './socketConfig';
 
-function Chat(props) {
+function ChatMessages(props) {
   const [msgId, setMsgId] = useState({ isShow: false, id: '' });
 
   const removeMsg = (target_id) => {
@@ -257,7 +257,7 @@ function Chat(props) {
                           : chatVal.replyTo.chatData}
                       </div>
                     </div>
-                    <div className="editedMessageFlex">
+                    <div className="editedMessageFlex" tabIndex="0">
                       {chatVal.editHistory && chatVal.editHistory.length > 0 && (
                         <div
                           className="isEdited"
@@ -297,7 +297,7 @@ function Chat(props) {
                     </div>
                   </div>
                 ) : (
-                  <div className="editedMessageFlex">
+                  <div className="editedMessageFlex" tabIndex="0">
                     {chatVal.editHistory && chatVal.editHistory.length > 0 && (
                       <div
                         className="isEdited"
@@ -376,4 +376,4 @@ function Chat(props) {
   );
 }
 
-export default Chat;
+export default ChatMessages;
