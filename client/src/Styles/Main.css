@@ -461,11 +461,11 @@ input[value*='Requests'] {
 }
 .chat > div > div > div.friend:focus-within {
   border-radius: 10px 10px 10px 0px;
-  border-bottom: 5px solid #00b4cc;
+  border-bottom: 5px solid darkslategray;
 }
 .chat > div > div > div.me:focus-within {
   border-radius: 10px 10px 0px 10px;
-  border-bottom: 5px solid #00b4cc;
+  border-bottom: 5px solid darkslategray;
 }
 .chat > div > div > div > div:focus {
   outline: none;
